@@ -1,49 +1,16 @@
 body {
-  background-color: hsl(0, 0%, 100%);
+  background-color: black;
   text-align: center;
   box-sizing: border-box;
   overflow: hidden;
   margin: 0;
-  transition: 0.25s;
   font-family: sans-serif;
-}
-
-.ting {
-  transition: .2s;
-  border: black solid;
-  font-size: .5em;
-  font-weight: bold;
-  border-radius: 640px;
-  display: inline-block;
-  cursor: default;
-}
-
-#game {
-  margin: 0;
-  padding: 0;
-  float: left;
-  display: inline-block;
 }
 
 #cont {
   position: absolute;
   text-align: center;
-}
-
-#score {
-  vertical-align: middle;
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  float: left;
-}
-
-#scoreInner {
-  width: 100%;
-}
-
-#scoreText {
-  clear: both;
+  background-color: orange;
 }
 
 .uButtons {
@@ -121,50 +88,6 @@ body {
   border-left: 0;
 }
 
-#pc {
-  display: inline-block;
-  width: 75%;
-  position: relative;
-  box-sizing: border-box;
-  overflow: hidden;
-  background: linear-gradient(#eee, #999);
-  line-height: 100%;
-  padding: 1% 0%;
-}
-
-#pa {
-  position: absolute;
-  top: 0px;
-  width: 300%;
-  height: 100%;
-  left: -100%;
-  transition: left .5s;
-}
-
-#pi {
-  float: left;
-  width: 33.333%;
-  height: 100%;
-  background: linear-gradient(#7e7, #191);
-}
-
-#pf {
-  float: right;
-  width: 33.333%;
-  height: 100%;
-  background: linear-gradient(#e77, #911);
-}
-
-#pt {
-  position: absolute;
-  top: 0px;
-  left: 0%;
-  width: 100%;
-  height: 100%;
-  text-align: center;
-  padding: 2%;
-}
-
 .fsButton {
   display: inline-block;
 }
@@ -201,32 +124,6 @@ body {
   display: inline-block;
   margin-right: 8%;
   transform: scaleX(2);
-}
-
-.sliderCont {
-  margin: 1% 0%;
-  background: linear-gradient(#ddd, #777);
-  border: 1px solid #000;
-  border-radius: 640px;
-  clear: both;
-  width: 90%;
-  left: 5%;
-  position: relative;
-  font-size: 0.2em;
-  overflow: visible;
-  height: 5%;
-}
-
-.sliderInner {
-  position: relative;
-  border-radius: 64px;
-  background: radial-gradient(farthest-side at 33% 33% , #fff, #333);
-  border: 1px solid #000;
-  top: -140%;
-  left: 28.4%;
-  box-sizing: border-box;
-  width: 14%;
-  height: 250%;
 }
 
 #noty {
@@ -305,14 +202,15 @@ body {
     left: 75%;
   }
 }
+
 #updateNotice {
   position: absolute;
-  opaticy: 0;
+  opacity: 0;
   top: 100%;
   width: 100%;
   transition: .5s;
   font-size: 1.2em;
-  font-weight:bold;
-  background-color:hsla(0, 0%, 100%, .9);
+  font-weight: bold;
+  background-color: hsla(0, 0%, 100%, .9);
   text-align: center;
 }

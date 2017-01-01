@@ -55,61 +55,86 @@ function resizeCenter(a, b) {
   return Math.round((a / 2) - (b / 2)) + 'px';
 }
 function randNums() {
+  /*
+    my game scaling system relies on the game itself being a fixed
+    size, and then only scaling it when rendering.
 
-  zObjects = [];
-/*
-  zObjects.push(
-  {
-    path:new Path2D() //the path of the object
-  , type:2  //the shape: 0=circle, 1=triangle, 2=square, etc.
-  , color:0 //the color of the object.
-  , x:5     //start horizontal coordinate of the object
-  , y:5     //start vertical coordinate of the object
-  , w:50     //width of the object
-  , h:50     //height of the object
-  }
-  );
-  //the zObject array would be something like this:
-  zObjects.push(
-  {
-    path:new Path2D() //the path of the object
-  , type:1  //the shape: 0=circle, 1=triangle, 2=square, etc.
-  , color:3 //the color of the object.
-  , x:60     //start horizontal coordinate of the object
-  , y:60     //start vertical coordinate of the object
-  , w:50     //width of the object
-  , h:50     //height of the object
-  }
-  );
+    This means that when dealing with anything about the game,
+    do the initial width and height, which I have set to 640 x 360.
 
-  zObjects.push(
-  {
-    path:new Path2D() //the path of the object
-  , type:0  //the shape: 0=circle, 1=triangle, 2=square, etc.
-  , color:4 //the color of the object.
-  , x:115     //start horizontal coordinate of the object
-  , y:115     //start vertical coordinate of the object
-  , w:50     //width of the object
-  , h:50     //height of the object
-  }
-  );
+    When the game is rendered, it is scaled to the current size of
+    the window at that point.
   */
+  zObjects = [];
+
+  //lets just make it always three for the moment.
+  var zwidth = gameWindow.initWidth;
+  
+  var z03 = Math.floor(zwidth * .02);
+  zwidth -= (4 * z03);
+  var z33 = Math.floor(zwidth * .33);  
+
   for (var a = 0; a < 3; a++) {
-    var b = (a * 55) + 5;
+    var b = Math.floor((a * z33) + z03 + (a * z03));
 
     zObjects.push({
         path:new Path2D() //the path of the object
       , type:Math.round(Math.random() * 2)   //the shape: 0=circle, 1=triangle, 2=square, etc.
       , color:Math.round(Math.random() * 6) //the color of the object.
       , x:b     //start horizontal coordinate of the object
-      , y:55     //start vertical coordinate of the object
-      , w:50     //width of the object
-      , h:50     //height of the object
+      , y:z03    //start vertical coordinate of the object
+      , w:z33     //width of the object
+      , h:z33     //height of the object
       });
   }
   
   createObjects();
 }
+
+
+function createObjects() {
+  //the Path2D would be zObjects[x].path
+  /*
+  MDN examples:
+  var rectangle = new Path2D();
+  rectangle.rect(10, 10, 50, 50);
+
+  var circle = new Path2D();
+  circle.moveTo(125, 35);
+  circle.arc(100, 35, 25, 0, 2 * Math.PI);
+
+  ctx.stroke(rectangle);
+  ctx.fill(circle);
+  */
+
+  //These are scaled to the current game window!
+  for (var x of zObjects) {
+    //circle
+    if (x.type == 0) {
+      x.path.arc(
+        gScale(x.x + Math.floor(x.w / 2))
+      , gScale(x.y + Math.floor(x.h / 2)) // half the height + 5
+      , gScale(x.h / 2) //radius = half the height of circle.
+      , 0, 2 * Math.PI); //these two are always same to make circle.
+    }
+    //Triangle
+    else if (x.type == 1){
+      x.path.moveTo(gScale(x.x + Math.floor(x.w / 2)), gScale(x.y)); //half the length of the start to the width
+      x.path.lineTo(gScale(x.x + x.w), gScale(x.y + x.h));//bottom-right
+      x.path.lineTo(gScale(x.x), gScale(x.y + x.h)); //bottom-left
+    }
+    //Square
+    else if (x.type == 2){
+      x.path.rect(gScale(x.x), gScale(x.y), gScale(x.w), gScale(x.h));
+    }
+    //more can go here :D
+  }
+}
+function gScale(a) {
+  //since this is called so many times, it is put in it's own function.
+  return Math.floor(a * gameVars.scale);
+}
+
 function newGame() {
   playing = null ;
   Win = 1;
@@ -233,7 +258,11 @@ function gameMainLoop() {
     var tNow = new Date().getTime();
     var frameTime = (tNow - gameVars.tWoz);
     gameVars.tWoz = tNow;
-    if (frameTime) {
+    //simply way of halfing the framerate, thus halfing the power cost and heat production of the game.
+    //I am assuming most devices are capable of 60FPS, so this 
+    //will make the game rendering animation ~30FPS.
+    gameVars.tock = !gameVars.tock
+    if (frameTime && gameVars.tock) {
       /*
        * update any gamepads here.
        * The mouse, touch, and keyboard inputs are updated as they change.
@@ -265,43 +294,6 @@ function gameRenderBack() {
   //use this canvas for static backgrounds and paralax type stuff.
 }
 
-function createObjects() {
-  //the Path2D would be zObjects[x].path
-  /*
-  MDN examples:
-  var rectangle = new Path2D();
-  rectangle.rect(10, 10, 50, 50);
-
-  var circle = new Path2D();
-  circle.moveTo(125, 35);
-  circle.arc(100, 35, 25, 0, 2 * Math.PI);
-
-  ctx.stroke(rectangle);
-  ctx.fill(circle);
-  */
-  for (var x of zObjects) {
-    //circle
-    if (x.type == 0) {
-      x.path.arc(
-        (x.x + Math.floor(x.w / 2))
-      , (x.y + Math.floor(x.h / 2)) // half the height + 5
-      , Math.floor(x.h / 2) //radius = half the height of circle.
-      , 0, 2 * Math.PI); //these two alway same to make circle.
-    }
-    //Triangle
-    else if (x.type == 1){
-      x.path.moveTo((x.x + Math.floor(x.w / 2)), x.y); //half the length of the start to the width
-      x.path.lineTo((x.x + x.w), (x.y + x.h));//bottom-right
-      x.path.lineTo(x.x, (x.y + x.h)); //bottom-left
-    }
-    //Square
-    else if (x.type == 2){
-      x.path.rect(x.x, x.y, x.w, x.h);
-    }
-    //more can go here :D
-  }
-}
-
 function gameRenderMain() {
   //clear the entire canvas:
   gameVars.gameMainCTX.clearRect(0,0,gameWindow.width,gameWindow.height);
@@ -320,7 +312,7 @@ function gameRenderMain() {
 
 function gameRenderFore() {
   // Use this canvas for scores and messages.
-  gameVars.gameForeCTX.font = '100% Arial'; //
+  gameVars.gameForeCTX.font = (gameVars.scale * 100) + '% Arial'; //
   gameVars.gameForeCTX.fillStyle = '#0f0'; //proper green
   gameVars.gameForeCTX.textAlign = 'center'; //
 

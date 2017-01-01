@@ -78,6 +78,7 @@ function Init() {
   gameVars = {
     tWoz:0
     , tFrame:0
+    , tock:1
     , gameBack:null, gameMain:null, gameFore:null
     , gameBackCTX:null, gameMainCTX:null, gameForeCTX:null
   };
