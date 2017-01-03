@@ -222,7 +222,7 @@ function addServiceWorker() {
     //should the user be prompted whether they'd like this made available offline?
     navigator.serviceWorker.register('sw.js').then(function(registration) {
       console.log('ServiceWorker registred');
-      
+
       registration.addEventListener('updatefound'
       , function(){
           console.log('Service Worker update found!');
@@ -264,29 +264,16 @@ function swSS(e) {
 //learned from https://serviceworke.rs/message-relay.html
 function swMessage(e) {
   console.log('nessage received: ' + e.data);
-  if (e.data === 'updated') {
-    if (!isUpdated) {
-      isUpdated = 1;
-      window.setTimeout(function() {
-       upNotOpen('<p>app updated</p>')
-      }, 3000);
-      /*
-        IDEA:
-        swipe up for changelog, swipe down to dismiss.
-      */
-    }
+  if (!isUpdated) {
+    isUpdated = 1;
+    window.setTimeout(function() {
+     upNotOpen('<p>app updated</p>')
+    }, 3000);
+    /*
+      IDEA:
+      swipe up for changelog, swipe down to dismiss.
+    */
   }
-  else if (e.data === 'Updating') {
-    if (!isUpdated) {
-      isUpdated = 1;
-      window.setTimeout(function() {
-       upNotOpen('<p>update downloaing...<br>Restart app to update.</p>')
-      }, 3000);
-    }
-  }
-
-
-  
 }
 function upNotOpen(msg) {
   var newWindow = document.createElement('div');

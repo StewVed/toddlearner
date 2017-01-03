@@ -49,12 +49,15 @@ function resize() {
 
   //calculate the size ratio from initial/base - let's do 640 x 360
   gameVars.scale = gameWindow.width / gameWindow.initWidth;
-
+  //redraw the objects to the new size
+  drawObjects();
+  //run the main game loop to sort any changes, and then render.
+  anEvent();
 }
 function resizeCenter(a, b) {
   return Math.round((a / 2) - (b / 2)) + 'px';
 }
-function randNums() {
+function createObjects() {
   /*
     my game scaling system relies on the game itself being a fixed
     size, and then only scaling it when rendering.
@@ -64,35 +67,66 @@ function randNums() {
 
     When the game is rendered, it is scaled to the current size of
     the window at that point.
+
+    (I imagine this is the method most games use since it makes sense!)
   */
   zObjects = [];
 
   //lets just make it always three for the moment.
   var zwidth = gameWindow.initWidth;
-  
+
   var z03 = Math.floor(zwidth * .02);
   zwidth -= (4 * z03);
   var z33 = Math.floor(zwidth * .33);  
 
   for (var a = 0; a < 3; a++) {
+    //generate a new color/shape combo
+    var ting;
+
+    while (!ting) {
+      ting = randObject();
+    }
+
     var b = Math.floor((a * z33) + z03 + (a * z03));
 
     zObjects.push({
         path:new Path2D() //the path of the object
-      , type:Math.round(Math.random() * 2)   //the shape: 0=circle, 1=triangle, 2=square, etc.
-      , color:Math.round(Math.random() * 6) //the color of the object.
-      , x:b     //start horizontal coordinate of the object
-      , y:z03    //start vertical coordinate of the object
-      , w:z33     //width of the object
-      , h:z33     //height of the object
+      , type:ting[0]  //the shape: 0=circle, 1=triangle, 2=square, etc.
+      , color:ting[1] //the color of the object.
+      , x:b         //start horizontal coordinate of the object
+      , y:z03       //start vertical coordinate of the object
+      , w:z33       //width of the object
+      , h:z33       //height of the object
       });
+
+      ting = null;
   }
-  
-  createObjects();
+  gameVars.picked = Math.round(Math.random() * 2);
+  drawObjects();
+  gameVars.go = 1;
+  userAsk();
 }
 
+function randObject() {
+    var nType = Math.round(Math.random() * 2);
+    var nColor = Math.round(Math.random() * 6);
+    var allGood = 1;
 
-function createObjects() {
+    //while these two match another object, re-choose.
+    for (var x of zObjects) {
+      if (nType === x.type && nColor === x.color){
+        allGood = 0;
+        break;
+      }
+    }
+    if (allGood) {
+      return [nType, nColor];
+    }
+    else {
+      return null;
+    }
+}
+function drawObjects() {
   //the Path2D would be zObjects[x].path
   /*
   MDN examples:
@@ -127,7 +161,7 @@ function createObjects() {
     else if (x.type == 2){
       x.path.rect(gScale(x.x), gScale(x.y), gScale(x.w), gScale(x.h));
     }
-    //more can go here :D
+    //add more objects here :D
   }
 }
 function gScale(a) {
@@ -135,37 +169,67 @@ function gScale(a) {
   return Math.floor(a * gameVars.scale);
 }
 
+function userAsk() {
+  gameVars.gameForeText = 'Which is the ' + 
+  hsls[zObjects[gameVars.picked].color][0] +
+  ' ' +
+  shps[zObjects[gameVars.picked].type] +
+  '?';
+  gameVars.gameForeColor = 'black';
+
+  //gameVars.gameForeText = 'Yes! That is the yellow triangle'; 
+
+  gameRenderFore();
+}
+function userRight() {
+  gameVars.gameForeText = 'Yes! That is the ' + 
+  hsls[zObjects[gameVars.picked].color][0] +
+  ' ' +
+  shps[zObjects[gameVars.picked].type] +
+  '.';
+  gameVars.gameForeColor = 'green';
+  gameRenderFore();
+
+  //make it do a different set of shapes each tick.
+  window.setTimeout(function() {
+    createObjects();
+  }, 2000);
+}
+function userWrong(num) {
+  gameVars.gameForeText = 'That is a ' + 
+  hsls[zObjects[num].color][0] +
+  ' ' +
+  shps[zObjects[num].type] +
+  '.';
+  gameVars.gameForeColor = 'red';
+  gameRenderFore();
+
+  window.setTimeout(function() {
+    userAsk();
+  }, 2000);
+}
+
 function newGame() {
   playing = null ;
   Win = 1;
   turn = 0;
   randing = 1;
-  randNums();
+  createObjects();
   //this can be used for reseting as well as the initial setup.
   window.clearInterval(gameVars.tFrame);
 
   gameVars.tWoz = new Date().getTime();
   gameMainLoop();
 }
-function endUp(num) {
-  if (!randing) {
-    //turn the correct button green:
-    ButtonBackColor(nums[combo], 80);
-    if (num != nums[combo]) {
-      //if the pressed button is not the correct button:
-      //turn the presssed button red:
-      ButtonBackColor(num, 30);
-      //user win = false!
-      Win = 0;
-      //you only lose if you get one wrong
-      //end the round now regardless of how many more clicks are left in this level.
-      combo = (level - 1);
+function endUp() {
+  var ting = findObject({clientX:mouseVars.xCurrent, clientY:mouseVars.yCurrent});
+  if (isFinite(parseInt(ting))) {
+    if (ting === gameVars.picked) {
+      userRight();
     }
-    combo++;
-    if (combo >= level) {
-      endTurn();
+    else {
+      userWrong(parseInt(ting));
     }
-    soundBeep('sine', 750, 1, 100);
   }
 }
 function endTurn() {
@@ -209,6 +273,25 @@ function end1(num, x) {
     levelChange();
   }, t * 2);
 }
+function findObject(e) {
+
+  var ting = null;
+  var mx = (Math.floor((e.clientX - document.getElementById('cont').offsetLeft) / gameVars.scale));
+  var my = (Math.floor((e.clientY - document.getElementById('cont').offsetTop) / gameVars.scale));
+
+  for (var x = 0; x < zObjects.length; x++) {
+    if (
+      (mx >= zObjects[x].x && 
+      mx <= (zObjects[x].x + zObjects[x].w))
+      &&
+      (my >= zObjects[x].y && 
+      my <= (zObjects[x].y + zObjects[x].h))
+    ) {
+      ting = x;
+    }
+  }
+  return ting;
+}
 function ButtonBackColor(a, zLux) {
   if (document.getElementById(a)) {
     document.getElementById(a).style.transition = '0s';
@@ -247,47 +330,59 @@ function toggleSettings() {
 }
 
 function gameMainLoop() {
-  if (!gameVars) {
-    return; //happens when the window is closed.
-  }
-
-  if (!gameVars.paused) {
+  if (gameVars) {
     /*
-     * Find the amount of time that has gone by since last frams
+     update gamepads here.
+     The mouse, touch, and keyboard inputs are updated
+     as they change.
     */
-    var tNow = new Date().getTime();
-    var frameTime = (tNow - gameVars.tWoz);
-    gameVars.tWoz = tNow;
-    //simply way of halfing the framerate, thus halfing the power cost and heat production of the game.
-    //I am assuming most devices are capable of 60FPS, so this 
-    //will make the game rendering animation ~30FPS.
-    gameVars.tock = !gameVars.tock
-    if (frameTime && gameVars.tock) {
+    gamePadUpdate();
+    gameVars.tfps++;
+    if (gameVars.go) {
       /*
-       * update any gamepads here.
-       * The mouse, touch, and keyboard inputs are updated as they change.
+       * Find the amount of time that has gone by since last frams
       */
-      gamePadUpdate();
-      //make it do a different set of shapes each tick.
-      randNums();
+      var tNow = new Date().getTime();
+      gameVars.tslf = (tNow - gameVars.tWoz);
+      gameVars.tWoz = tNow;
+      /*
+        because there is little need for any game to render at 60FPS
+        because humans can only notice movement up to about 30FPS
+        (DVD movies are 24.9FPS or so for example)
+        user can change
+        that to further lower the frame-rate, thus saving more power.
+      */
+      /*
+        TODO: slider it settings to up the frameTime limit!
+      */
+      if (gameVars.tslf && gameVars.tfps > gameVars.fpsLimit) {
 
-      //gameRenderBack();
-      gameRenderMain();
-      //gameRenderFore();
+        if (gameVars.goBack) {
+          gameRenderBack();
+          gameVars.goBack = 0;
+        }
+
+        gameRenderMain();
+
+        //reset the frame skipper
+        gameVars.tfps = 0;
+        //effectively pause the game until the next event.
+        gameVars.go = 0;
+      }
     }
-    gameVars.tFrame = window.requestAnimationFrame(function(){gameMainLoop()});
-
   }
+
+  gameVars.tFrame = window.requestAnimationFrame(function(){gameMainLoop()});
 }
 
 
-function gamePause(yes) {
+function gamePause(a) {
   // needs a conditional to check for focus really
 
-  if (yes) {
+  if (a) {
 
   }
-  gameVars.paused = yes;
+  gameVars.go = a;
 }
 
 function gameRenderBack() {
@@ -311,16 +406,19 @@ function gameRenderMain() {
 }
 
 function gameRenderFore() {
+//clear the entire canvas:
+  gameVars.gameForeCTX.clearRect(0,0,gameWindow.width,gameWindow.height);
+
   // Use this canvas for scores and messages.
-  gameVars.gameForeCTX.font = (gameVars.scale * 100) + '% Arial'; //
-  gameVars.gameForeCTX.fillStyle = '#0f0'; //proper green
-  gameVars.gameForeCTX.textAlign = 'center'; //
+  gameVars.gameForeCTX.font = 'bold ' + (gameVars.scale * 250) + '% Arial'; //
+  gameVars.gameForeCTX.fillStyle = gameVars.gameForeColor; //proper green
+  //gameVars.gameForeCTX.textAlign = 'center'; //
 
   //add the score, top-right with 3 pixels from edge
   gameVars.gameForeCTX.fillText(
-    zTextToDisplay
-    , 10 //horizontal start coordinate
-    , 10 //vertical start coordinate
+    gameVars.gameForeText
+    , (gameWindow.width / 2) - Math.round(gameVars.gameForeCTX.measureText(gameVars.gameForeText).width / 2) //horizontal start coordinate
+    , Math.round(300 * gameVars.scale) //vertical start coordinate
   );
 }
 

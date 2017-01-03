@@ -60,6 +60,13 @@ var nums = []
  , ['purple', 270, 50]
  , ['pink', 320, 50]
  ]
+, shps = [
+    'circle'
+  , 'triangle'
+  , 'square'
+  , 'heart'
+  , 'star'
+]
 , gameWindow    //vars to hold variables for the window
 , gameVars      //vars for the game itself
 , zObjects = []
@@ -76,9 +83,12 @@ function Init() {
   };
 
   gameVars = {
-    tWoz:0
-    , tFrame:0
-    , tock:1
+      go:0        //only process changes on an event
+    , tWoz:0      //Time on Last Frame
+    , tslf:0      //Time Since Last Frame
+    , tFrame:0    //Window Animation Frame timer
+    , tfps:5      //how many frames have passed (to the fpsLimit)
+    , fpsLimit:2  //how many anim frames to skip (60, 30, 15)
     , gameBack:null, gameMain:null, gameFore:null
     , gameBackCTX:null, gameMainCTX:null, gameForeCTX:null
   };

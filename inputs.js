@@ -8,6 +8,11 @@
  *
  * Sensetivity should be adjustable, and axes and buttons would be configurable
 */
+function anEvent() {
+  //An event has fired, so let the gameLoop run through.
+  gameVars.go = 1;
+}
+
 function bubbleStop(e) {
   try {
     e.preventDefault();
@@ -66,6 +71,7 @@ function gamePadsButtonEventCheck() {
           } else {
             gamePadsButtonUp(x);
           }
+          anEvent();
         }
       }
     }
@@ -88,18 +94,21 @@ function gamePadsButtonUp(zButton) {
 }
 function keyNum(e) {
   return e.keyCode || window.event.keyCode;
+  //this is called when there is a keydown or keyup:
+  anEvent();
 }
 function keyDown(e) {
   var theKey = keyNum(e);
-  4
+
   if (keysIgnore.indexOf(theKey) === -1) {
     bubbleStop();
     if (isFinite(keysCurrent[theKey])) {
       //because there is a 0, I gotta check whether it is null/undefined.
       endUp(keysCurrent[theKey]);
     }
-    keyVars.push(theKey);
     //simply add the newly pressed key into the WinKeys array.
+    keyVars.push(theKey);
+    anEvent();
   }
 }
 function keyRedefine(theKey) {
@@ -107,8 +116,8 @@ function keyRedefine(theKey) {
   var theKey = keyNum(e);
   if (keysIgnore.indexOf(theKey) === -1) {
     bubbleStop();
-    keyVars.push(theKey);
     //simply add the newly pressed key into the WinKeys array.
+    keyVars.push(theKey);
   }
 }
 function keyUp(e) {
@@ -116,9 +125,10 @@ function keyUp(e) {
   if (keysIgnore.indexOf(theKey) === -1) {
     bubbleStop();
     while (keyVars.indexOf(theKey) != -1) {
-      keyVars.splice(keyVars.indexOf(theKey), 1);
       //updates array length while delete() doesn't
+      keyVars.splice(keyVars.indexOf(theKey), 1);
     }
+    anEvent();
   }
 }
 function mouseClear() {
@@ -143,7 +153,7 @@ function mouseClear() {
 }
 function mouseDown(e) {
   bubbleStop(e);
-  var targ = findTarget(e);
+  var targ = findObject(e);
   mouseVars.button = null == e.which ? e.button : e.which;
   mouseVars.type = 'click';
   mouseVars.clickTimer = window.setTimeout(function() {
@@ -156,10 +166,8 @@ function mouseDown(e) {
   mouseVars.xStart = e.clientX;
   mouseVars.yCurrent = e.clientY;
   mouseVars.yStart = e.clientY;
-  //look for volume control slider
-  if (targ.id.slice(0, 3) === 'vol') {
-    volDown();
-  }
+
+  anEvent();
 }
 function mouseMove(e) {
   bubbleStop(e);
@@ -173,7 +181,7 @@ function mouseMove(e) {
     mMoved = 0;
   });
   //make sure that only one mouse movement is done per frame to reduce cpu usage.
-  var targ = findTarget(e);
+  var targ = findObject(e);
   //check for onmouseout/onmousein events!
   if (mouseVars.targetCurrent != targ) {
     if (mouseVars.type === 'click') {
@@ -205,6 +213,10 @@ function mouseMove(e) {
       mouseVars.type = 'drag';
       window.clearTimeout(mouseVars.clickTimer);
     }
+  }
+  //only render is a button is pressed... like if the user is dragging.
+  if  (mouseVars.button) {
+    anEvent();
   }
 }
 function mouseMoveEnter(targ) {/*
@@ -239,30 +251,14 @@ function mouseUp(e) {
     //no point in recording something like 15.00000033
   }
   mouseClear();
+
+  anEvent();
 }
 function mouseWheel(e) {
   //for zooming in/out, changing speed, etc.
 }
 function mouseClick() {
-  var targ = mouseVars.targetStart;
-  if (isFinite(parseInt(targ.id))) {
-    //is a button
-    endUp(targ.id);
-  } else if (targ.id === 'fsI' || targ.id === 'fs') {
-    //fullscreen button
-    fullScreenToggle();
-  } else if (targ.id === 'set') {
-    //settings button
-    toggleSettings();
-  } else if (targ.id.slice(-5) === 'Close') {
-    //popup close button
-    //close the popup
-    targ.parentNode.parentNode.removeChild(targ.parentNode);
-  } else if (targ.id.slice(0, 4) === 'stor') {
-    //Storage Notify Yes button
-    storageChoose(targ.id.slice(-1));
-    document.getElementById('noty').parentNode.removeChild(document.getElementById('noty'));
-  }
+  endUp();
 }
 function mouseLongClick() {//this is also the right-click.
 //for right click, and long taps.

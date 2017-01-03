@@ -1,0 +1,44 @@
+add star and heart shapes.
+
+add Speech:
+  Colors:
+    Red
+    Orange
+    Yellow
+    Green
+    Blue
+    Purple
+    Pink
+  Shapes:
+    Circle
+    Triangle
+    Square
+    Heart
+    Star
+  Words:
+    which
+    Yes!
+    That
+    is
+    the
+    a
+  Numbers:
+    1 to 10
+    11
+    12
+    13
+    teen
+    twenty
+    thirty
+    fourty
+    fifty
+
+
+I think I'll so a single sound file, then have each word
+a specific start and duration time.
+so, var zWords = [
+     {text:'red', start:45, end:83}
+  ,  {text:'orange', start:90, end:120}
+]
+assuming that the sounds are in milliseconds, and all
+browsers do the same!!!!!!!
