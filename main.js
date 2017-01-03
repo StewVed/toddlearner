@@ -53,6 +53,8 @@ function resize() {
   drawObjects();
   //run the main game loop to sort any changes, and then render.
   anEvent();
+  gameVars.go = 1;
+  gameRenderFore();
 }
 function resizeCenter(a, b) {
   return Math.round((a / 2) - (b / 2)) + 'px';
@@ -90,7 +92,7 @@ function createObjects() {
     var b = Math.floor((a * z33) + z03 + (a * z03));
 
     zObjects.push({
-        path:new Path2D() //the path of the object
+        path:null //the path of the object
       , type:ting[0]  //the shape: 0=circle, 1=triangle, 2=square, etc.
       , color:ting[1] //the color of the object.
       , x:b         //start horizontal coordinate of the object
@@ -143,6 +145,7 @@ function drawObjects() {
 
   //These are scaled to the current game window!
   for (var x of zObjects) {
+    x.path = new Path2D();
     //circle
     if (x.type == 0) {
       x.path.arc(
