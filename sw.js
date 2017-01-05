@@ -1,11 +1,8 @@
-var CACHE = 'toddlearner-2017-1-3b';
+var CACHE = 'toddlearner-2017-1-4';
 //https://serviceworke.rs/strategy-cache-only_service-worker_doc.html
 self.addEventListener('install', function(event) {
   event.waitUntil(caches.open(CACHE).then(function(cache) {
     return cache.addAll([
-      './'
-      , './appmanifest'
-      , './index.html'
       , './initialize.js'
       , './inputs.js'
       , './loader.js'

@@ -49,6 +49,14 @@ function resize() {
 
   //calculate the size ratio from initial/base - let's do 640 x 360
   gameVars.scale = gameWindow.width / gameWindow.initWidth;
+
+  //lets just make it always three for the moment.
+  var zwidth = gameWindow.initWidth;
+
+  z03 = Math.floor(zwidth * .02);
+  zwidth -= (4 * z03);
+  zSize = Math.floor(zwidth * .33);
+
   //redraw the objects to the new size
   drawObjects();
   //run the main game loop to sort any changes, and then render.
@@ -74,13 +82,6 @@ function createObjects() {
   */
   zObjects = [];
 
-  //lets just make it always three for the moment.
-  var zwidth = gameWindow.initWidth;
-
-  var z03 = Math.floor(zwidth * .02);
-  zwidth -= (4 * z03);
-  var z33 = Math.floor(zwidth * .33);  
-
   for (var a = 0; a < 3; a++) {
     //generate a new color/shape combo
     var ting;
@@ -89,28 +90,24 @@ function createObjects() {
       ting = randObject();
     }
 
-    var b = Math.floor((a * z33) + z03 + (a * z03));
+    var b = Math.floor((a * zSize) + z03 + (a * z03));
 
     zObjects.push({
-        path:null //the path of the object
-      , type:ting[0]  //the shape: 0=circle, 1=triangle, 2=square, etc.
+        type:ting[0]  //the shape: 0=circle, 1=triangle, 2=square, etc.
       , color:ting[1] //the color of the object.
       , x:b         //start horizontal coordinate of the object
-      , y:z03       //start vertical coordinate of the object
-      , w:z33       //width of the object
-      , h:z33       //height of the object
+      , y:z03 * 2       //start vertical coordinate of the object
       });
 
-      ting = null;
+    ting = null;
   }
   gameVars.picked = Math.round(Math.random() * 2);
   drawObjects();
-  gameVars.go = 1;
   userAsk();
 }
 
 function randObject() {
-    var nType = Math.round(Math.random() * 2);
+    var nType = Math.round(Math.random() * 3);
     var nColor = Math.round(Math.random() * 6);
     var allGood = 1;
 
@@ -128,44 +125,76 @@ function randObject() {
       return null;
     }
 }
-function drawObjects() {
-  //the Path2D would be zObjects[x].path
-  /*
-  MDN examples:
-  var rectangle = new Path2D();
-  rectangle.rect(10, 10, 50, 50);
-
-  var circle = new Path2D();
-  circle.moveTo(125, 35);
-  circle.arc(100, 35, 25, 0, 2 * Math.PI);
-
-  ctx.stroke(rectangle);
-  ctx.fill(circle);
-  */
-
+function drawObjects(zType) {
   //These are scaled to the current game window!
-  for (var x of zObjects) {
-    x.path = new Path2D();
-    //circle
-    if (x.type == 0) {
-      x.path.arc(
-        gScale(x.x + Math.floor(x.w / 2))
-      , gScale(x.y + Math.floor(x.h / 2)) // half the height + 5
-      , gScale(x.h / 2) //radius = half the height of circle.
-      , 0, 2 * Math.PI); //these two are always same to make circle.
-    }
-    //Triangle
-    else if (x.type == 1){
-      x.path.moveTo(gScale(x.x + Math.floor(x.w / 2)), gScale(x.y)); //half the length of the start to the width
-      x.path.lineTo(gScale(x.x + x.w), gScale(x.y + x.h));//bottom-right
-      x.path.lineTo(gScale(x.x), gScale(x.y + x.h)); //bottom-left
-    }
-    //Square
-    else if (x.type == 2){
-      x.path.rect(gScale(x.x), gScale(x.y), gScale(x.w), gScale(x.h));
-    }
-    //add more objects here :D
-  }
+
+  //circle
+  zShapes[0].path = new Path2D();
+  zShapes[0].path.arc(
+    gScale(zSize * .5)
+  , gScale(zSize * .5) // half the height + 5
+  , gScale(zSize * .5) //radius = half the height of circle.
+  , 0, 2 * Math.PI); //these two are always same to make circle.
+  zShapes[0].path.closePath();
+
+  //Triangle
+  zShapes[1].path = new Path2D();
+  zShapes[1].path.moveTo(gScale(zSize * .5), 0); //half the length of the start to the width
+  zShapes[1].path.lineTo(gScale(zSize), gScale(zSize));//bottom-right
+  zShapes[1].path.lineTo(0, gScale(zSize)); //bottom-left
+  zShapes[1].path.closePath();
+
+  //Square
+  zShapes[2].path = new Path2D();
+  zShapes[2].path.rect(0, 0, gScale(zSize), gScale(zSize));
+  zShapes[2].path.closePath();
+
+  //Star
+  zShapes[3].path = new Path2D();
+  //Done by eye from co-ords on a star created in inkscape!
+  zShapes[3].path.moveTo(gScale(zSize * .5), 0); //outer-top-middle
+  zShapes[3].path.lineTo(gScale(zSize * .64), gScale(zSize * .38));//inner-top-right
+  zShapes[3].path.lineTo(gScale(zSize), gScale(zSize * .4));//outer-top-right
+  zShapes[3].path.lineTo(gScale(zSize * .7), gScale(zSize * .62));//inner-bottom-right
+  zShapes[3].path.lineTo(gScale(zSize * .8), gScale(zSize));//outer-bottom-right
+  zShapes[3].path.lineTo(gScale(zSize * .5), gScale(zSize * .77));//inner-bottom-middle
+  zShapes[3].path.lineTo(gScale(zSize * .2), gScale(zSize));//inner-bottom-left
+  zShapes[3].path.lineTo(gScale(zSize * .3), gScale(zSize * .62));//inner-bottom-left
+  zShapes[3].path.lineTo(0, gScale(zSize * .4));//outer-top-left
+  zShapes[3].path.lineTo(gScale(zSize * .38), gScale(zSize * .38));//inner-top-left
+  zShapes[3].path.lineTo(gScale(zSize * .5), 0); //outer-top-middle
+  zShapes[3].path.closePath();
+
+  //Heart
+  zShapes[4].path = new Path2D();
+  //top-center
+  zShapes[4].path.moveTo(gScale(zSize * .5), 15);
+  //right arc
+  zShapes[4].path.bezierCurveTo(
+     20
+    ,25
+    ,20
+    ,62.5
+    ,20
+    ,62.5);
+  //right diagonal line
+  zShapes[4].path.lineTo(gScale(zSize * .38), gScale(zSize * .38));//inner-top-left
+  //left diagonal line
+  zShapes[4].path.lineTo(gScale(zSize * .38), gScale(zSize * .38));//inner-top-left
+  //left arc
+  zShapes[4].path.bezierCurveTo(
+     20
+    ,25
+    ,20
+    ,62.5
+    ,20
+    ,62.5);
+  zShapes[4].path.closePath();
+  //add more objects here :D
+
+
+  //render the new shapes
+  gameVars.go = 1;
 }
 function gScale(a) {
   //since this is called so many times, it is put in it's own function.
@@ -174,9 +203,9 @@ function gScale(a) {
 
 function userAsk() {
   gameVars.gameForeText = 'Which is the ' + 
-  hsls[zObjects[gameVars.picked].color][0] +
+  hsls[zObjects[gameVars.picked].color].text +
   ' ' +
-  shps[zObjects[gameVars.picked].type] +
+  zShapes[zObjects[gameVars.picked].type].text +
   '?';
   gameVars.gameForeColor = 'black';
 
@@ -186,9 +215,9 @@ function userAsk() {
 }
 function userRight() {
   gameVars.gameForeText = 'Yes! That is the ' + 
-  hsls[zObjects[gameVars.picked].color][0] +
+  hsls[zObjects[gameVars.picked].color].text +
   ' ' +
-  shps[zObjects[gameVars.picked].type] +
+  zShapes[zObjects[gameVars.picked].type].text +
   '.';
   gameVars.gameForeColor = 'green';
   gameRenderFore();
@@ -200,9 +229,9 @@ function userRight() {
 }
 function userWrong(num) {
   gameVars.gameForeText = 'That is a ' + 
-  hsls[zObjects[num].color][0] +
+  hsls[zObjects[num].color].text +
   ' ' +
-  shps[zObjects[num].type] +
+  zShapes[zObjects[num].type].text +
   '.';
   gameVars.gameForeColor = 'red';
   gameRenderFore();
@@ -285,26 +314,15 @@ function findObject(e) {
   for (var x = 0; x < zObjects.length; x++) {
     if (
       (mx >= zObjects[x].x && 
-      mx <= (zObjects[x].x + zObjects[x].w))
+      mx <= (zObjects[x].x + zSize))
       &&
       (my >= zObjects[x].y && 
-      my <= (zObjects[x].y + zObjects[x].h))
+      my <= (zObjects[x].y + zSize))
     ) {
       ting = x;
     }
   }
   return ting;
-}
-function ButtonBackColor(a, zLux) {
-  if (document.getElementById(a)) {
-    document.getElementById(a).style.transition = '0s';
-    document.getElementById(a).style.backgroundColor = 'hsl(' + hslClrs[a][0] + ', 100%, ' + zLux + '%)'; //hslLs[a];
-
-    window.setTimeout(function(){
-      document.getElementById(a).style.transition = '.3s';
-      document.getElementById(a).style.backgroundColor = 'hsl(' + hslClrs[a][0] + ', 100%, ' + hslClrs[a][1] + '%)'; //hsls[a];
-    }, (t * .5));
-  }
 }
 // fullscreen handling from webtop then simplified for this project...
 function fullScreenToggle() {
@@ -356,7 +374,7 @@ function gameMainLoop() {
         that to further lower the frame-rate, thus saving more power.
       */
       /*
-        TODO: slider it settings to up the frameTime limit!
+        TODO: slider in settings to up the frameTime limit!
       */
       if (gameVars.tslf && gameVars.tfps > gameVars.fpsLimit) {
 
@@ -398,8 +416,10 @@ function gameRenderMain() {
 
   //loop through all o fthe objects and fill/draw each one's path
   for (var x of zObjects) {
-    gameVars.gameMainCTX.fillStyle = hsls[x.color][0];
-    gameVars.gameMainCTX.fill(x.path);
+    gameVars.gameMainCTX.fillStyle = hsls[x.color].text;
+    gameVars.gameMainCTX.translate(gScale(x.x), gScale(x.y));
+    gameVars.gameMainCTX.fill(zShapes[x.type].path);
+    gameVars.gameMainCTX.translate(-gScale(x.x), -gScale(x.y));
   }
 
   //for moving ojects around, take the selected ojbect
@@ -415,9 +435,8 @@ function gameRenderFore() {
   // Use this canvas for scores and messages.
   gameVars.gameForeCTX.font = 'bold ' + (gameVars.scale * 250) + '% Arial'; //
   gameVars.gameForeCTX.fillStyle = gameVars.gameForeColor; //proper green
-  //gameVars.gameForeCTX.textAlign = 'center'; //
+  //gameVars.gameForeCTX.textAlign = 'center';
 
-  //add the score, top-right with 3 pixels from edge
   gameVars.gameForeCTX.fillText(
     gameVars.gameForeText
     , (gameWindow.width / 2) - Math.round(gameVars.gameForeCTX.measureText(gameVars.gameForeText).width / 2) //horizontal start coordinate

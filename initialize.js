@@ -41,6 +41,8 @@ var WinAudioCtx = new (window.AudioContext || window.webkitAudioContext);
 
 
 var nums = []
+, zSize
+, z03
 , globVol = .33 //the volume of the beeps in the game.
 , randing = 0   //whether the game is generating and playing the new number sequence
 , buttons = 4   //how many buttons to use in the game - 4 by default
@@ -52,20 +54,20 @@ var nums = []
 //I think I will just do darker and lighter as 25% and 90% or somerthing.
 //eg. hslClrs[0][0] is 'red', hslClrs[2][2] is 48
 , hsls = [
-   ['red', 0, 50]
- , ['orange', 31, 50]
- , ['yellow', 60, 48]
- , ['green', 120, 45]
- , ['blue', 220, 50]
- , ['purple', 270, 50]
- , ['pink', 320, 50]
+   {text:'red', h:0, l:50}
+ , {text:'orange', h:31, l:50}
+ , {text:'yellow', h:60, l:48}
+ , {text:'green', h:120, l:45}
+ , {text:'blue', h:220, l:50}
+ , {text:'purple', h:270, l:50}
+ , {text:'pink', h:320, l:50}
  ]
-, shps = [
-    'circle'
-  , 'triangle'
-  , 'square'
-  , 'heart'
-  , 'star'
+, zShapes = [
+    {text:'circle', path:null}
+  , {text:'triangle', path:null}
+  , {text:'square', path:null}
+  , {text:'star', path:null}
+  , {text:'heart', path:null}
 ]
 , gameWindow    //vars to hold variables for the window
 , gameVars      //vars for the game itself
@@ -79,7 +81,7 @@ function Init() {
   mouseClear();
 
   gameWindow = {
-    initWidth:640, initHeight:360, width:0, weight:0, scale:1
+    initWidth:640, initHeight:360, width:0, height:0, scale:1
   };
 
   gameVars = {
