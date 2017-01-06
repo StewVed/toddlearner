@@ -6,8 +6,8 @@
   "display": "fullscreen",
   "lang": "en",
   "scope": "/",
-  "theme_color": "whitesmoke",
-  "background_color": "whitesmoke",
+  "theme_color": "white",
+  "background_color": "white",
   "icons": [{
     "src": "favicon.svg"
   }, {
