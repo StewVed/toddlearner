@@ -107,7 +107,7 @@ function createObjects() {
 }
 
 function randObject() {
-    var nType = Math.round(Math.random() * 3);
+    var nType = Math.round(Math.random() * 4);
     var nColor = Math.round(Math.random() * 6);
     var allGood = 1;
 
@@ -167,28 +167,32 @@ function drawObjects(zType) {
 
   //Heart
   zShapes[4].path = new Path2D();
-  //top-center
-  zShapes[4].path.moveTo(gScale(zSize * .5), 15);
+
   //right arc
-  zShapes[4].path.bezierCurveTo(
-     20
-    ,25
-    ,20
-    ,62.5
-    ,20
-    ,62.5);
+  zShapes[4].path.arc(
+     gScale(zSize * .75)
+    ,gScale(zSize * .3)
+    ,gScale(zSize * .25)
+    ,1 * Math.PI
+    ,2.25 * Math.PI
+    , false
+  );
+
   //right diagonal line
-  zShapes[4].path.lineTo(gScale(zSize * .38), gScale(zSize * .38));//inner-top-left
-  //left diagonal line
-  zShapes[4].path.lineTo(gScale(zSize * .38), gScale(zSize * .38));//inner-top-left
+  zShapes[4].path.lineTo(gScale(zSize * .5), gScale(zSize)); //bottom middle
+  zShapes[4].path.moveTo(gScale(zSize * .5), gScale(zSize*.2)); //back to top-center
   //left arc
-  zShapes[4].path.bezierCurveTo(
-     20
-    ,25
-    ,20
-    ,62.5
-    ,20
-    ,62.5);
+  zShapes[4].path.arc(
+     gScale(zSize * .25)
+    ,gScale(zSize * .3)
+    ,gScale(zSize * .25)
+    ,2 * Math.PI
+    ,.75 * Math.PI
+    , true
+  );
+  //left diagonal line
+  zShapes[4].path.lineTo(gScale(zSize * .5), gScale(zSize)); //bottom middle
+
   zShapes[4].path.closePath();
   //add more objects here :D
 
