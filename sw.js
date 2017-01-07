@@ -1,8 +1,10 @@
-var CACHE = 'toddlearner-2017-1-4';
+var CACHE = 'toddlearner-2017-1-7';
 //https://serviceworke.rs/strategy-cache-only_service-worker_doc.html
 self.addEventListener('install', function(event) {
   event.waitUntil(caches.open(CACHE).then(function(cache) {
     return cache.addAll([
+        './'
+      , './index.html'
       , './initialize.js'
       , './inputs.js'
       , './loader.js'
@@ -22,17 +24,6 @@ self.addEventListener('activate', function(event) {
       if (cacheName !== CACHE) {
         return caches.delete(cacheName);
       }
-    })).then(function() {
-      console.log('SW: new version active.');
-      
-      return self.clients.matchAll().then(function(clients) {
-        console.log('SW: in forEach clients..');
-        clients.forEach(function(client) {
-          client.postMessage(msg);
-          console.log('SW: clients.client.id is ' + client.id);
-        });
-      });
-      
-    });
+    }))
   }));
 })

@@ -125,73 +125,70 @@ function randObject() {
       return null;
     }
 }
-function drawObjects(zType) {
+function drawObjects() {
   //These are scaled to the current game window!
 
   //circle
   zShapes[0].path = new Path2D();
   zShapes[0].path.arc(
-    gScale(zSize * .5)
-  , gScale(zSize * .5) // half the height + 5
-  , gScale(zSize * .5) //radius = half the height of circle.
+    gScale(.5)
+  , gScale(.5) // half the height + 5
+  , gScale(.5) //radius = half the height of circle.
   , 0, 2 * Math.PI); //these two are always same to make circle.
   zShapes[0].path.closePath();
 
   //Triangle
   zShapes[1].path = new Path2D();
-  zShapes[1].path.moveTo(gScale(zSize * .5), 0); //half the length of the start to the width
-  zShapes[1].path.lineTo(gScale(zSize), gScale(zSize));//bottom-right
-  zShapes[1].path.lineTo(0, gScale(zSize)); //bottom-left
+  zShapes[1].path.moveTo(gScale(.5), gScale(.025)); //half the length of the start to the width
+  zShapes[1].path.lineTo(gScale(.975), gScale(.975));//bottom-right
+  zShapes[1].path.lineTo(gScale(.025), gScale(.975)); //bottom-left
   zShapes[1].path.closePath();
 
   //Square
   zShapes[2].path = new Path2D();
-  zShapes[2].path.rect(0, 0, gScale(zSize), gScale(zSize));
+  zShapes[2].path.rect(gScale(.025), gScale(.025), gScale(.95), gScale(.95));
   zShapes[2].path.closePath();
 
   //Star
   zShapes[3].path = new Path2D();
   //Done by eye from co-ords on a star created in inkscape!
-  zShapes[3].path.moveTo(gScale(zSize * .5), 0); //outer-top-middle
-  zShapes[3].path.lineTo(gScale(zSize * .64), gScale(zSize * .38));//inner-top-right
-  zShapes[3].path.lineTo(gScale(zSize), gScale(zSize * .4));//outer-top-right
-  zShapes[3].path.lineTo(gScale(zSize * .7), gScale(zSize * .62));//inner-bottom-right
-  zShapes[3].path.lineTo(gScale(zSize * .8), gScale(zSize));//outer-bottom-right
-  zShapes[3].path.lineTo(gScale(zSize * .5), gScale(zSize * .77));//inner-bottom-middle
-  zShapes[3].path.lineTo(gScale(zSize * .2), gScale(zSize));//inner-bottom-left
-  zShapes[3].path.lineTo(gScale(zSize * .3), gScale(zSize * .62));//inner-bottom-left
-  zShapes[3].path.lineTo(0, gScale(zSize * .4));//outer-top-left
-  zShapes[3].path.lineTo(gScale(zSize * .38), gScale(zSize * .38));//inner-top-left
-  zShapes[3].path.lineTo(gScale(zSize * .5), 0); //outer-top-middle
+  zShapes[3].path.moveTo(gScale(.5), 0); //outer-top-middle
+  zShapes[3].path.lineTo(gScale(.64), gScale(.38));//inner-top-right
+  zShapes[3].path.lineTo(gScale(1), gScale(.4));//outer-top-right
+  zShapes[3].path.lineTo(gScale(.7), gScale(.62));//inner-bottom-right
+  zShapes[3].path.lineTo(gScale(.8), gScale(1));//outer-bottom-right
+  zShapes[3].path.lineTo(gScale(.5), gScale(.77));//inner-bottom-middle
+  zShapes[3].path.lineTo(gScale(.2), gScale(1));//inner-bottom-left
+  zShapes[3].path.lineTo(gScale(.3), gScale(.62));//inner-bottom-left
+  zShapes[3].path.lineTo(0, gScale(.4));//outer-top-left
+  zShapes[3].path.lineTo(gScale(.38), gScale(.38));//inner-top-left
+  zShapes[3].path.lineTo(gScale(.5), 0); //outer-top-middle
   zShapes[3].path.closePath();
 
   //Heart
   zShapes[4].path = new Path2D();
 
-  //right arc
-  zShapes[4].path.arc(
-     gScale(zSize * .75)
-    ,gScale(zSize * .3)
-    ,gScale(zSize * .25)
-    ,1 * Math.PI
-    ,2.25 * Math.PI
-    , false
+  zShapes[4].path.moveTo(gScale(.1), gScale(.5));
+
+  zShapes[4].path.bezierCurveTo(
+     gScale(-.325)
+    ,gScale(-.1)
+    ,gScale(.7)
+    ,gScale(-.2)
+    ,gScale(.5)
+    ,gScale(.5)
   );
 
-  //right diagonal line
-  zShapes[4].path.lineTo(gScale(zSize * .5), gScale(zSize)); //bottom middle
-  zShapes[4].path.moveTo(gScale(zSize * .5), gScale(zSize*.2)); //back to top-center
-  //left arc
-  zShapes[4].path.arc(
-     gScale(zSize * .25)
-    ,gScale(zSize * .3)
-    ,gScale(zSize * .25)
-    ,2 * Math.PI
-    ,.75 * Math.PI
-    , true
+  zShapes[4].path.bezierCurveTo(
+     gScale(.3)
+    ,gScale(-.2)
+    ,gScale(1.325)
+    ,gScale(-.1)
+    ,gScale(.9)
+    ,gScale(.5)
   );
-  //left diagonal line
-  zShapes[4].path.lineTo(gScale(zSize * .5), gScale(zSize)); //bottom middle
+  //right diagonal line
+  zShapes[4].path.lineTo(gScale(.5), gScale(1));
 
   zShapes[4].path.closePath();
   //add more objects here :D
@@ -201,6 +198,7 @@ function drawObjects(zType) {
   gameVars.go = 1;
 }
 function gScale(a) {
+  a *= zSize;
   //since this is called so many times, it is put in it's own function.
   return Math.floor(a * gameVars.scale);
 }
@@ -420,10 +418,12 @@ function gameRenderMain() {
 
   //loop through all o fthe objects and fill/draw each one's path
   for (var x of zObjects) {
+    var a = Math.floor(x.x * gameVars.scale);
+    var b = Math.floor(x.y * gameVars.scale);
     gameVars.gameMainCTX.fillStyle = hsls[x.color].text;
-    gameVars.gameMainCTX.translate(gScale(x.x), gScale(x.y));
+    gameVars.gameMainCTX.translate(a, b);
     gameVars.gameMainCTX.fill(zShapes[x.type].path);
-    gameVars.gameMainCTX.translate(-gScale(x.x), -gScale(x.y));
+    gameVars.gameMainCTX.translate(-a, -b);
   }
 
   //for moving ojects around, take the selected ojbect

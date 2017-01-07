@@ -218,63 +218,104 @@ https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API/Using_Servic
 */
 function addServiceWorker() {
   if ('serviceWorker'in navigator) {
-
-    //should the user be prompted whether they'd like this made available offline?
-    navigator.serviceWorker.register('sw.js').then(function(registration) {
-      console.log('ServiceWorker registred');
-
-      registration.addEventListener('updatefound'
-      , function(){
-          console.log('Service Worker update found!');
-          window.setTimeout(function() {
-           upNotOpen('<p>Update available!<br>Restart app to update.</p>');
-          }, 3000);
-      });
-
-      if (registration.installing) {
-        console.log('Service Worker installing...');
-      }
-
-      if (registration.waiting) {
-        console.log('Service Worker installed and waiting to activate.');
-      }
-      registration.addEventListener('statechange'
-      , function(e){
-          console.log('Service Worker Resgistration state changed: ' + e.state)
-      });
-    }).catch(function(err) {
-      console.log('ServiceWorker registration failed: ', err);
-    });
-
-    //listen for communication from the ServiceWorker:
-    navigator.serviceWorker.addEventListener('message', swMessage);
+    //not sure what this does.... see if it ever fires!
+    navigator.serviceWorker.addEventListener('controllerchange', swControllerChange);
 
     /*
       this next event should fire when a serviceWorker is:
       installing, installed, activating, activated, redundant
     */
-    navigator.serviceWorker.addEventListener('statechange', swSS);
+    if (navigator.serviceWorker.controller) {
+      console.log('navigator.serviceWorker.controller.addEventListener: statechange ');
+      navigator.serviceWorker.controller.addEventListener('statechange', swSC);
+    }
+
+    //should the user be prompted whether they'd like this made available offline?
+    navigator.serviceWorker.register('sw.js').then(function(registration) {
+      //if there is an active serviceWorker, listen for changes in it's state
+      if (registration.active) {
+        registration.active.addEventListener('statechange', swRA);
+      }
+
+      registration.addEventListener('updatefound', function() {
+        //Listen for changes installing serviceWorker's state
+        this.installing.addEventListener('statechange', function(e) {
+          swRU(e);
+        });
+      });
+      //if there is a waiting serviceWorker, listen for changes in it's state
+      if (registration.waiting) {
+        if (registration.waiting.state === 'installed') {
+          console.log('new ServiceWorker installed and waiting to activate.');
+          sw_installed();
+        }
+        registration.waiting.addEventListener('statechange', swRW);
+      }
+
+      console.log('ServiceWorker registered');
+    }).catch(function(err) {
+      console.log('ServiceWorker registration failed: ', err);
+    });
 
   }
 }
 
-function swSS(e) {
-  console.log('ServiceWorker State Change: ' + e.state);
+function swControllerChange(e) {
+  //fired after a serviceWorker has become active for the first time??
+  console.log('ServiceWorker Controller changed');
 }
-//learned from https://serviceworke.rs/message-relay.html
-function swMessage(e) {
-  console.log('nessage received: ' + e.data);
-  if (!isUpdated) {
-    isUpdated = 1;
-    window.setTimeout(function() {
-     upNotOpen('<p>app updated</p>')
-    }, 3000);
+
+function swRA(e) {
+  console.log('active ServiceWorker state changed: ' + e.target.state);
+  if (e.target.state === 'activated') {
+    //app newly updated to new version
+    sw_active_activated()
+  }
+}
+function swRW(e) {
+  console.log('Waiting ServiceWorker state changed: ' + e.target.state);
+}
+
+function swRU(e) {
+  console.log('registration.onstatechange: ' + e.target.state);
+
+  if (e.target.state === 'activated') {
+      sw_active_activated()
+  }
+  else if (e.target.state === 'installed') {
+    sw_installed();
+  }
+  else if (e.target.state === 'redundant') {
+    //install failed!
+    console.log('Service Worker update FAILED!!');
+  }
+
+}
+function swRC(e) {
+  console.log('Registration State Change: ' + e.state);
+}
+function swSC(e) {
+  console.log('ServiceWorker Controller State Change: ' + e.state);
+}
+function sw_installed() {
+  //New serviceWorker's cache has downloaded, and it is waiting to activate
+  console.log('Service Worker update downloaded!');
+  window.setTimeout(function() {
+   upNotOpen('<p>Update downloaded!<br>Restart app for new version.</p>');
+  }, 2000);
+}
+function sw_active_activated() {
+  //New serviceWorker has activated and is running.
+  console.log('Service Worker updated & Active!');
+  window.setTimeout(function() {
+   upNotOpen('<p>app Updated!<br>scroll up to see what\'s new.</p>');
+  }, 2000);
     /*
       IDEA:
       swipe up for changelog, swipe down to dismiss.
     */
-  }
 }
+
 function upNotOpen(msg) {
   var newWindow = document.createElement('div');
   newWindow.id = 'updateNotice';
