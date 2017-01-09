@@ -204,6 +204,7 @@ function filesLoadedCheck() {
       isLoaded = 1;
       document.getElementById('loading').parentNode.removeChild(document.getElementById('loading'));
       Init();
+    }
   }
 }
 function loaderReHeight() {
