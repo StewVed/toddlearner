@@ -204,7 +204,6 @@ function filesLoadedCheck() {
       isLoaded = 1;
       document.getElementById('loading').parentNode.removeChild(document.getElementById('loading'));
       Init();
-    }
   }
 }
 function loaderReHeight() {
@@ -215,54 +214,40 @@ function loaderReHeight() {
 https://www.w3.org/TR/service-workers/
 https://developers.google.com/web/fundamentals/getting-started/primers/service-workers
 https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API/Using_Service_Workers
+Also simply by looking at the stuff in Chrome's Development tools environment while paused!
 */
 function addServiceWorker() {
   if ('serviceWorker'in navigator) {
-    //not sure what this does.... see if it ever fires!
-    navigator.serviceWorker.addEventListener('controllerchange', swControllerChange);
-
-    /*
-      this next event should fire when a serviceWorker is:
-      installing, installed, activating, activated, redundant
-    */
-    if (navigator.serviceWorker.controller) {
-      console.log('navigator.serviceWorker.controller.addEventListener: statechange ');
-      navigator.serviceWorker.controller.addEventListener('statechange', swSC);
-    }
 
     //should the user be prompted whether they'd like this made available offline?
     navigator.serviceWorker.register('sw.js').then(function(registration) {
       //if there is an active serviceWorker, listen for changes in it's state
       if (registration.active) {
-        registration.active.addEventListener('statechange', swRA);
+        registration.active.addEventListener('statechange', swRA)
       }
-
+      //needed? Could add installing serviceWorker eventlistener here
+      //listen for updates to the serviceworker's file
       registration.addEventListener('updatefound', function() {
-        //Listen for changes installing serviceWorker's state
+        //Listen for changes in the installing serviceWorker's state
         this.installing.addEventListener('statechange', function(e) {
-          swRU(e);
+          swRU(e)
         });
       });
       //if there is a waiting serviceWorker, listen for changes in it's state
       if (registration.waiting) {
         if (registration.waiting.state === 'installed') {
           console.log('new ServiceWorker installed and waiting to activate.');
-          sw_installed();
+          sw_installed()
         }
         registration.waiting.addEventListener('statechange', swRW);
       }
 
-      console.log('ServiceWorker registered');
+      console.log('ServiceWorker registered')
     }).catch(function(err) {
-      console.log('ServiceWorker registration failed: ', err);
+      console.log('ServiceWorker registration failed: ', err)
     });
 
   }
-}
-
-function swControllerChange(e) {
-  //fired after a serviceWorker has become active for the first time??
-  console.log('ServiceWorker Controller changed');
 }
 
 function swRA(e) {
@@ -273,7 +258,11 @@ function swRA(e) {
   }
 }
 function swRW(e) {
-  console.log('Waiting ServiceWorker state changed: ' + e.target.state);
+  console.log('Waiting ServiceWorker state changed: ' + e.target.state)
+  if (e.target.state === 'installed') {
+    console.log('Waiting ServiceWorker installed and waiting to activate.');
+    sw_installed()
+  }
 }
 
 function swRU(e) {
@@ -283,36 +272,41 @@ function swRU(e) {
       sw_active_activated()
   }
   else if (e.target.state === 'installed') {
-    sw_installed();
+    sw_installed()
   }
   else if (e.target.state === 'redundant') {
     //install failed!
-    console.log('Service Worker update FAILED!!');
+    console.log('Service Worker update failed!!')
   }
 
-}
-function swRC(e) {
-  console.log('Registration State Change: ' + e.state);
-}
-function swSC(e) {
-  console.log('ServiceWorker Controller State Change: ' + e.state);
 }
 function sw_installed() {
   //New serviceWorker's cache has downloaded, and it is waiting to activate
   console.log('Service Worker update downloaded!');
   window.setTimeout(function() {
-   upNotOpen('<p>Update downloaded!<br>Restart app for new version.</p>');
+   upNotOpen('<p>Update downloaded!<br>Restart app for new version.</p>')
   }, 2000);
 }
 function sw_active_activated() {
   //New serviceWorker has activated and is running.
   console.log('Service Worker updated & Active!');
   window.setTimeout(function() {
-   upNotOpen('<p>app Updated!<br>scroll up to see what\'s new.</p>');
+   //upNotOpen('<p>app Updated!<br>scroll up to see what\'s new.</p>')
+   upNotOpen('<p>app Updated!</p>')
   }, 2000);
     /*
       IDEA:
-      swipe up for changelog, swipe down to dismiss.
+      --done--animate a bounce or two at the top of the popup. (CSS animate)
+
+      swipe up for changelog, swipe down or to either side to dismiss.
+      
+      with the swipe up, the popup 'toast' element is moved up with the swipe,
+      then scrolls more (still with swipe) when it reaches the top.
+      
+      swiping down simply reverses it, but add resistance at the bottom
+      so the user has to release and re-swipe down/left/right to dismiss.
+
+      prolly best to add a 'X' top-right too.
     */
 }
 
@@ -320,17 +314,11 @@ function upNotOpen(msg) {
   var newWindow = document.createElement('div');
   newWindow.id = 'updateNotice';
   document.body.appendChild(newWindow);
-  newWindow.innerHTML = msg;
-  newWindow.style.opacity = .9;
-  newWindow.style.top = (document.body.offsetHeight - newWindow.offsetHeight) + 'px';
-  window.setTimeout(function() {
-   upNotClose()
-  }, 5000);
+  newWindow.innerHTML = '<div id="updateClose">X</div>' + msg;
 }
 function upNotClose() {
   if (document.getElementById('updateNotice')) {
-    document.getElementById('updateNotice').style.opacity = 0;
-    document.getElementById('updateNotice').style.top = document.body.offsetHeight + 'px';
+    document.getElementById('updateNotice').style.top = '100%';
     window.setTimeout(function() {
       if (document.getElementById('updateNotice')) {
         //after a second, once the element is hidden, remove it.

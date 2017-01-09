@@ -153,7 +153,10 @@ function mouseClear() {
 }
 function mouseDown(e) {
   bubbleStop(e);
-  var targ = findObject(e);
+  var targ = findTarget(e);
+  if (targ.id.slice(0,3) === 'game') {
+    targ = findObject(e);
+  }
   mouseVars.button = null == e.which ? e.button : e.which;
   mouseVars.type = 'click';
   mouseVars.clickTimer = window.setTimeout(function() {
@@ -205,10 +208,11 @@ function mouseMove(e) {
   if (mouseVars.type === 'vol') {
     volMove();
   } else if (mouseVars.type === 'click') {
-        if (((mouseVars.xStart + 10) < e.clientX)
-        || ((mouseVars.xStart - 10) > e.clientX)
-        || ((mouseVars.yStart + 10) < e.clientY)
-        || ((mouseVars.yStart - 10) > e.clientY)
+        if (((mouseVars.xStart + 25) < e.clientX)
+        || ((mouseVars.xStart - 25) > e.clientX)
+        || ((mouseVars.yStart + 25) < e.clientY)
+        || ((mouseVars.yStart - 25) > e.clientY)
+        || (mouseVars.targetCurrent !== mouseVars.targetStart)
        ) {
       mouseVars.type = 'drag';
       window.clearTimeout(mouseVars.clickTimer);
@@ -258,7 +262,12 @@ function mouseWheel(e) {
   //for zooming in/out, changing speed, etc.
 }
 function mouseClick() {
-  endUp();
+  if (mouseVars.targetCurrent.id === 'updateClose') {
+    upNotClose();
+  }
+  else {
+    endUp();
+  }
 }
 function mouseLongClick() {//this is also the right-click.
 //for right click, and long taps.
