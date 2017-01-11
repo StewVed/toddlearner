@@ -219,8 +219,6 @@ Also simply by looking at the stuff in Chrome's Development tools environment wh
 */
 function addServiceWorker() {
   if ('serviceWorker'in navigator) {
-
-    //should the user be prompted whether they'd like this made available offline?
     navigator.serviceWorker.register('sw.js').then(function(registration) {
       //if there is an active serviceWorker, listen for changes in it's state
       if (registration.active) {
@@ -263,6 +261,10 @@ function swRW(e) {
   if (e.target.state === 'installed') {
     console.log('Waiting ServiceWorker installed and waiting to activate.');
     sw_installed()
+  }
+  else if (e.target.state === 'activated') {
+    console.log('Waiting ServiceWorker has activated.');
+    sw_active_activated()
   }
 }
 

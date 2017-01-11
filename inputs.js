@@ -154,8 +154,8 @@ function mouseClear() {
 function mouseDown(e) {
   bubbleStop(e);
   var targ = findTarget(e);
-  if (targ.id.slice(0,3) === 'game') {
-    targ = findObject(e);
+  if (targ.id.slice(0,4) === 'game') {
+    gameVars.gameObject = findObject(e);
   }
   mouseVars.button = null == e.which ? e.button : e.which;
   mouseVars.type = 'click';
@@ -184,9 +184,13 @@ function mouseMove(e) {
     mMoved = 0;
   });
   //make sure that only one mouse movement is done per frame to reduce cpu usage.
-  var targ = findObject(e);
+  var targ = findTarget(e);
+  if (targ.id.slice(0,4) === 'game') {
+    gameVars.gameObjectLast = gameVars.gameObject;
+    gameVars.gameObject = findObject(e);
+  }
   //check for onmouseout/onmousein events!
-  if (mouseVars.targetCurrent != targ) {
+  if (gameVars.gameObjectLast !== gameVars.gameObject) {
     if (mouseVars.type === 'click') {
       mouseVars.type = 'drag';
       window.clearTimeout(mouseVars.clickTimer);
@@ -212,7 +216,6 @@ function mouseMove(e) {
         || ((mouseVars.xStart - 25) > e.clientX)
         || ((mouseVars.yStart + 25) < e.clientY)
         || ((mouseVars.yStart - 25) > e.clientY)
-        || (mouseVars.targetCurrent !== mouseVars.targetStart)
        ) {
       mouseVars.type = 'drag';
       window.clearTimeout(mouseVars.clickTimer);
@@ -266,7 +269,10 @@ function mouseClick() {
     upNotClose();
   }
   else {
-    endUp();
+    if (!randing) {
+      randing = 1;
+      endUp();
+    }
   }
 }
 function mouseLongClick() {//this is also the right-click.

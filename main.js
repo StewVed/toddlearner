@@ -214,6 +214,7 @@ function userAsk() {
   //gameVars.gameForeText = 'Yes! That is the yellow triangle'; 
 
   gameRenderFore();
+  randing = 0;
 }
 function userRight() {
   gameVars.gameForeText = 'Yes! That is the ' + 
@@ -256,8 +257,8 @@ function newGame() {
   gameMainLoop();
 }
 function endUp() {
-  var ting = findObject({clientX:mouseVars.xCurrent, clientY:mouseVars.yCurrent});
-  if (isFinite(parseInt(ting))) {
+  var ting = parseInt(gameVars.gameObject);
+  if (isFinite(ting)) {
     if (ting === gameVars.picked) {
       userRight();
     }
