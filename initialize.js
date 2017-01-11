@@ -91,6 +91,8 @@ function Init() {
     , tFrame:0    //Window Animation Frame timer
     , tfps:5      //how many frames have passed (to the fpsLimit)
     , fpsLimit:2  //how many anim frames to skip (60, 30, 15)
+    , gameObject: null
+    , gameObjectLast: null
     , gameBack:null, gameMain:null, gameFore:null
     , gameBackCTX:null, gameMainCTX:null, gameForeCTX:null
   };
