@@ -34,7 +34,8 @@ function fLoad(zSrc, zType, zId, zText, zLoad, WinNo) {
   loadingVars[zFileName].xhr = 1;
   //the total amount to be downloaded.
   //Create a new request to the server
-  if (!isOffline) { //quick check to se if it is local: (Dev only) :
+  if (!isOffline) {
+    //quick check to se if it is local: (Dev only) :
     var xhr = new XMLHttpRequest();
     xhr.open('GET', zSrc, true);
     //was false so it blocks until a response is got, but recoded to true with a loading pulser instead.
@@ -72,8 +73,7 @@ function fLoad(zSrc, zType, zId, zText, zLoad, WinNo) {
       fileProgress(e, zFileName)
     }, false);
     xhr.send();
-  }
-  else {
+  } else {
     fLoadSimple(zSrc.split('.')[0]);
   }
   //high resolution version of date.now()
@@ -108,7 +108,7 @@ function fileProgress(e, zFileName) {
       if (loadingVars[zFileName].sizeUnknown) {
         loadingVars[zFileName].sizeUnknown = 0;
         window.clearInterval(loadingVars[zFileName].endCheckTimer);
-        loadingVars[zFileName].endCheckTimer = null ;
+        loadingVars[zFileName].endCheckTimer = null;
       }
       document.getElementById(zFileName + 'Pi').classList.remove('loadVV');
       //calculate the amount of time that has passed since last update:
@@ -210,7 +210,6 @@ function filesLoadedCheck() {
 function loaderReHeight() {
   document.getElementById('loading').style.top = ((window.innerHeight - document.getElementById('loading').offsetHeight) / 2) + 'px';
 }
-
 /*serviceworker (mostly) learned from:
 https://www.w3.org/TR/service-workers/
 https://developers.google.com/web/fundamentals/getting-started/primers/service-workers
@@ -240,15 +239,12 @@ function addServiceWorker() {
         }
         registration.waiting.addEventListener('statechange', swRW);
       }
-
       console.log('ServiceWorker registered')
     }).catch(function(err) {
       console.log('ServiceWorker registration failed: ', err)
     });
-
   }
 }
-
 function swRA(e) {
   console.log('active ServiceWorker state changed: ' + e.target.state);
   if (e.target.state === 'activated') {
@@ -261,58 +257,49 @@ function swRW(e) {
   if (e.target.state === 'installed') {
     console.log('Waiting ServiceWorker installed and waiting to activate.');
     sw_installed()
-  }
-  else if (e.target.state === 'activated') {
+  } else if (e.target.state === 'activated') {
     console.log('Waiting ServiceWorker has activated.');
     sw_active_activated()
   }
 }
-
 function swRU(e) {
   console.log('registration.onstatechange: ' + e.target.state);
-
   if (e.target.state === 'activated') {
-      sw_active_activated()
-  }
-  else if (e.target.state === 'installed') {
+    sw_active_activated()
+  } else if (e.target.state === 'installed') {
     sw_installed()
-  }
-  else if (e.target.state === 'redundant') {
+  } else if (e.target.state === 'redundant') {
     //install failed!
     console.log('Service Worker update failed!!')
   }
-
 }
 function sw_installed() {
   //New serviceWorker's cache has downloaded, and it is waiting to activate
   console.log('Service Worker update downloaded!');
   window.setTimeout(function() {
-   upNotOpen('<p>Update downloaded!<br>Restart app for new version.</p>')
+    upNotOpen('<p>Update downloaded!<br>Restart app for new version.</p>')
   }, 2000);
 }
 function sw_active_activated() {
   //New serviceWorker has activated and is running.
   console.log('Service Worker updated & Active!');
   window.setTimeout(function() {
-   //upNotOpen('<p>app Updated!<br>scroll up to see what\'s new.</p>')
-   upNotOpen('<p>app Updated!</p>')
+    //upNotOpen('<p>app Updated!<br>scroll up to see what\'s new.</p>')
+    upNotOpen('<p>app Updated!</p>')
   }, 2000);
-    /*
+  /*
       IDEA:
-      --done--animate a bounce or two at the top of the popup. (CSS animate)
-
       swipe up for changelog, swipe down or to either side to dismiss.
-      
+
       with the swipe up, the popup 'toast' element is moved up with the swipe,
       then scrolls more (still with swipe) when it reaches the top.
-      
+
       swiping down simply reverses it, but add resistance at the bottom
       so the user has to release and re-swipe down/left/right to dismiss.
 
       prolly best to add a 'X' top-right too.
     */
 }
-
 function upNotOpen(msg) {
   var newWindow = document.createElement('div');
   newWindow.id = 'updateNotice';

@@ -174,7 +174,7 @@ body {
   float: none;
   animation: Vom .5s ease-in-out alternate infinite;
   width: 25%;
-  background: radial-gradient(farthest-side at 50% 50%, hsl(0, 100%, 50%), hsla(0, 100%, 50%, 0));
+  background: radial-gradient(farthest-side at 50% 50%, hsl(120, 100%, 50%), hsla(0, 100%, 50%, 0));
 }
 
 @keyframes Vom {
