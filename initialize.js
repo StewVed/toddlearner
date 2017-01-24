@@ -70,16 +70,17 @@ var nums = []
   , {text:'heart', path:null}
 ]
 , gameWindow    //vars to hold variables for the window
-, gameVars      //vars for the game itself
 , zObjects = []
 ;
 
 function Init() {
-  // Add event listeners to the game elenemt
+  //Add event listeners to the game element
   addEventListeners();
-  // initialize the mouse event
+  //initialize the mouse event
   mouseClear();
-
+  //initialize the scroll vars
+  scrollClear();
+  //window management vars
   gameWindow = {
     initWidth:640, initHeight:360, width:0, height:0, scale:1
   };
@@ -115,9 +116,6 @@ function Init() {
   var dataToLoad = storageLoad('vol');
   if (dataToLoad) {
     globVol = parseFloat(dataToLoad);
-    //move the volume slider to the loaded volume
-    //should be kept in a var and 
-    //volUpdate();
   }
 
   //make a link to the game areas in memory for quicker access:
@@ -134,10 +132,8 @@ function Init() {
   gamePadsButtonEventCheck();
   resize();
   newGame();
-
 }
 function addEventListeners() {
-  //window.addEventListener('error', Win_errorHandler, false); //now done from the main index.html file
   window.addEventListener('resize', resize, false);
   /*
    * I only want to pick up input events on the game,
@@ -146,7 +142,6 @@ function addEventListeners() {
    */
   window.addEventListener('contextmenu', bubbleStop, false);
   window.addEventListener('dblclick', bubbleStop, false);
-  //all below used to be document.getElementById('Wallpaper')
   window.addEventListener(mouseWheelType, mouseWheel, false);
   window.addEventListener('touchstart', touchDown, false);
   window.addEventListener('touchmove', touchMove, false);

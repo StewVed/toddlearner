@@ -1,12 +1,16 @@
 body {
   background-color: whitesmoke;
-  text-align: center;
   box-sizing: border-box;
   overflow: hidden;
   margin: 0;
   font-family: sans-serif;
 }
-
+.B {
+  font-weight:bold;
+}
+.C {
+  text-align:center;
+}
 #cont {
   position: absolute;
   text-align: center;
@@ -182,13 +186,13 @@ body {
   to {left: 75%;}
 }
 
-#updateNotice {
+#toastPopup {
   position: absolute;
   top: 80%;
   width: 100%;
-  height: 100%;
+  /* height: 100%; */
   border-top: 4px solid hsl(210, 100%, 50%);
-  transition: .7s ease-in;
+  /* transition: .7s ease-in; */
   animation: popupBouncer .6s ease-in-out;
   font-size: 1.2em;
   font-weight: bold;
@@ -201,7 +205,7 @@ body {
   100% {top: 80%;}
 }
 
-#updateClose {
+#toastClose {
   position: absolute;
   left: calc(100% - 32px);
   font-weight: bold;

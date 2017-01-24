@@ -4,7 +4,10 @@
  * it is not smooth, but at the moment, this is the only way I've
  * found to show progress.
 */
-var fileList = ['initialize', 'inputs', 'main', 'storage']
+//vars for the game itself
+//put here so that I can check when the game has initialized
+var gameVars;
+var fileList = ['initialize', 'inputs', 'main', 'storage', 'texts']
   , isLoaded = 0
   , isUpdated = 0
   , isOffline = 0
@@ -16,6 +19,11 @@ var fileList = ['initialize', 'inputs', 'main', 'storage']
   https://developer.mozilla.org/en-US/docs/Web/API/Service_Worker_API/Using_Service_Workers
   Also simply by looking at the stuff in Chrome's Development tools environment while paused!
 */
+
+
+//check the toaster for scrolling etc.:
+sw_active_activated('u');
+
 if ('serviceWorker' in navigator) {
   //https://w3c.github.io/ServiceWorker/#install
   navigator.serviceWorker.register('sw.js').then(function(registration) {
@@ -24,7 +32,7 @@ if ('serviceWorker' in navigator) {
       registration.active.addEventListener('statechange', function(e) {
         console.log('active serviceWorker statechange: ' + e.target.state);
         if (e.target.state === 'activated') {
-          sw_active_activated('u')
+          sw_active_activated('u');
         }
       });
     }
@@ -39,10 +47,14 @@ if ('serviceWorker' in navigator) {
       if (registration.active && registration.waiting.state === 'installed') {
         console.log('waiting ServiceWorker installed and still waiting to activate.');
         //inform user that a hard-reload is needed, not just F5
-        window.setTimeout(function() {
-          upNotOpen('Waiting to update...<br>Please close then re-open app for new version.')
-        }, 2000);
+        upNotCheck('Waiting to update...<br>Please close then re-open app for new version.');
       }
+      registration.waiting.addEventListener('statechange', function(e) {
+        console.log('waiting serviceWorker statechange: ' + e.target.state);
+        if (e.target.state === 'activated') {
+          sw_active_activated('u');
+        }
+      });
     }
     /*
       listen for an update to the serviceworker's file.
@@ -82,89 +94,78 @@ if ('serviceWorker' in navigator) {
     console.log('ServiceWorker registration failed: ', err)
   });
 }
-/*
-
-function swRA(e) {
-  console.log('active ServiceWorker state changed: ' + e.target.state);
-  if (e.target.state === 'activated') {
-    //app newly updated to new version
-    sw_active_activated('a')
-  }
-}
-function swRI(e) {
-  console.log('registration.onstatechange: ' + e.target.state);
-  if (e.target.state === 'activated') {
-    sw_active_activated('i')
-  } else if (e.target.state === 'installed') {
-    sw_installed()
-  } else if (e.target.state === 'redundant') {
-    //install failed!
-    console.log('Service Worker update failed!!')
-  }
-}
-function swRW(e) {
-  console.log('Waiting ServiceWorker state changed: ' + e.target.state)
-  if (e.target.state === 'installed') {
-    console.log('Waiting ServiceWorker installed and waiting to activate.');
-    sw_installed()
-  } else if (e.target.state === 'activated') {
-    console.log('Waiting ServiceWorker has activated.');
-    sw_active_activated('w')
-  }
-}
-*/
 function sw_installed() {
   //New serviceWorker's cache has downloaded, and it is waiting to activate
   console.log('Service Worker update downloaded!');
-  window.setTimeout(function() {
-    upNotOpen('Update downloaded.<br>Please restart app for new version.')
-  }, 2000);
+  upNotCheck('Update downloaded.<br>Please restart app for new version.');
 }
 function sw_active_activated(zType) {
-  var heh = '';
-  if (zType === 'i') {
-    heh = 'You can use this webapp while offline!'
-  }
-  else if (zType === 'u') {
-    heh = 'app Updated.<br>scroll up to see what\'s new.'
-    /*
-      TODO:
-      swipe up for changelog, swipe down or to either side to dismiss.
-
-      with the swipe up, the popup 'toast' element is moved up with the swipe,
-      then scrolls more (still with swipe) when it reaches the top.
-
-      swiping down simply reverses it, but add resistance at the bottom
-      so the user has to release and re-swipe down/left/right to dismiss.
-    */
-  }
   console.log('Service Worker ' + zType + ' Active!');
-  if (document.getElementById('updateNotice')) {
-    //change updateNotice from installed to updated.
-    document.getElementById('unp').innerHTML = heh;
+  upNotCheck(zType);
+}
+function upNotCheck(msg) {
+  if (gameVars) {
+    if (gameVars.tWoz) {
+      //the main game has initialized, so show the message.
+      if (msg.length < 3) {
+        var heh = '';
+        if (msg === 'i') {
+          heh = 'You can use this webapp while offline!'
+        }
+        else if (msg === 'u') {
+          heh = 'app Updated.<br>scroll up to see what\'s new.<br><br>' + appCL;
+        }
+        msg = heh;
+      }
+      upNotOpen(msg)
+    }
   }
   else {
+    //not yet initialized, so wait a bit then check again.
     window.setTimeout(function() {
-      upNotOpen(heh)
-    }, 2000);
+      upNotCheck(msg)
+    }, 200);
   }
-
 }
 function upNotOpen(msg) {
-  var newWindow = document.createElement('div');
-  newWindow.id = 'updateNotice';
-  document.body.appendChild(newWindow);
-  newWindow.innerHTML = '<div id="updateClose">X</div><p id="unp">' + msg + '<p/>';
+  if (document.getElementById('toastPopup')) {
+    //change toastPopup from installed to updated.
+    document.getElementById('unp').innerHTML = msg;
+  }
+  else {
+    var newWindow = document.createElement('div');
+    newWindow.id = 'toastPopup';
+    document.body.appendChild(newWindow);
+    newWindow.innerHTML = '<div id="toastClose">X</div><p id="unp">' + msg + '<p/>';
+  }
+  newWindow.classList.add('letScroll');
+  upSetClass(newWindow);
+}
+function upSetClass(zElem) {
+  var zElemChildList = zElem.children;
+  for (var zChilds = 0; zChilds < zElemChildList.length; zChilds++) {
+    if (zElemChildList[zChilds].nodeName.toLowerCase() != 'br') {
+      zElemChildList[zChilds].classList.add('letScroll');
+    }
+    if (zElemChildList[zChilds].nodeName.toLowerCase() == 'a') {
+      //new bit to make links black in the dialogue!
+      zElemChildList[zChilds].style.color = '#000';
+    }
+    if (zElemChildList[zChilds].childElementCount > 0) {
+      upSetClass(zElemChildList[zChilds]);
+    }
+  }
 }
 function upNotClose() {
-  if (document.getElementById('updateNotice')) {
-    document.getElementById('updateNotice').style.top = '100%';
+  if (document.getElementById('toastPopup')) {
+    document.getElementById('toastPopup').style.transition = '.3s ease-in';
+    document.getElementById('toastPopup').style.top = '100%';
     window.setTimeout(function() {
-      if (document.getElementById('updateNotice')) {
+      if (document.getElementById('toastPopup')) {
         //after a second, once the element is hidden, remove it.
-        document.body.removeChild(document.getElementById('updateNotice'));
+        document.body.removeChild(document.getElementById('toastPopup'));
       }
-    }, 1000);
+    }, 500);
   }
 }
 

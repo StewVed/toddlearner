@@ -12,7 +12,6 @@ function anEvent() {
   //An event has fired, so let the gameLoop run through.
   gameVars.go = 1;
 }
-
 function bubbleStop(e) {
   try {
     e.preventDefault();
@@ -99,7 +98,6 @@ function keyNum(e) {
 }
 function keyDown(e) {
   var theKey = keyNum(e);
-
   if (keysIgnore.indexOf(theKey) === -1) {
     bubbleStop();
     if (isFinite(keysCurrent[theKey])) {
@@ -136,40 +134,43 @@ function mouseClear() {
     window.clearTimeout(mouseVars.clickTimer);
   }
   mouseVars = {
-    button: null,
-    type: null,
-    cursorStyle: null,
-    clickTimer: null,
-    targetCurrent: null,
-    targetStart: null,
-    timeStart: null,
-    moved: 0,
-    xCurrent: null,
-    xStart: null,
-    yCurrent: null,
-    yStart: null
+      button: null
+    , type: null
+    , cursorStyle: null
+    , clickTimer: null
+    , current:{target:null, time:null, x:null, y:null}
+    , start:{target:null, time:null, x:null, y:null}
+    , moved: 0
   }
   document.body.style.cursor = 'default';
+}
+function scrollClear() {
+  scrollVars = {
+    targ: null,
+    leftDiff: null,
+    TopDiff: null,
+  }
 }
 function mouseDown(e) {
   bubbleStop(e);
   var targ = findTarget(e);
-  if (targ.id.slice(0,4) === 'game') {
+  if (targ.id.slice(0, 4) === 'game') {
     gameVars.gameObject = findObject(e);
   }
   mouseVars.button = null == e.which ? e.button : e.which;
+
   mouseVars.type = 'click';
   mouseVars.clickTimer = window.setTimeout(function() {
     mouseLongClick()
   }, 500);
-  mouseVars.targetCurrent = targ;
-  mouseVars.targetStart = targ;
-  mouseVars.timeStart = new Date();
-  mouseVars.xCurrent = e.clientX;
-  mouseVars.xStart = e.clientX;
-  mouseVars.yCurrent = e.clientY;
-  mouseVars.yStart = e.clientY;
-
+  mouseVars.current.target  = targ;
+  mouseVars.current.time = new Date().getTime();
+  mouseVars.current.x = e.clientX;
+  mouseVars.current.y = e.clientY;
+  mouseVars.start.target = targ;
+  mouseVars.start.time = new Date().getTime();
+  mouseVars.start.x = e.clientX;
+  mouseVars.start.y = e.clientY;
   anEvent();
 }
 function mouseMove(e) {
@@ -185,10 +186,11 @@ function mouseMove(e) {
   });
   //make sure that only one mouse movement is done per frame to reduce cpu usage.
   var targ = findTarget(e);
-  if (targ.id.slice(0,4) === 'game') {
+  if (targ.id.slice(0, 4) === 'game') {
     gameVars.gameObjectLast = gameVars.gameObject;
     gameVars.gameObject = findObject(e);
   }
+  var zTime = new Date().getTime();
   //check for onmouseout/onmousein events!
   if (gameVars.gameObjectLast !== gameVars.gameObject) {
     if (mouseVars.type === 'click') {
@@ -200,29 +202,45 @@ function mouseMove(e) {
   }
   //now onmouseover - this one is done always.
   mouseMoveOver(targ);
-  /*
-   * do stuff here if needed?
-   *
-   * likely all movement/scrolling/panning would be done in the mainloop
-   */
+  //scroll the about/changelogs type dialogues
+  if (mouseVars.type === 'scrollable' && (e.clientY != mouseVars.current.y)) {
+    var framesPerSecond = (1000 / (scrollVars.time - mouseVars.current.time));
+    var pixlesMoved = (mouseVars.current.y - scrollVars.y);
+    var speedInPixelsPerSecond = pixlesMoved * framesPerSecond;
+    //console.log(speedInPixelsPerSecond);
+    if (pixlesMoved) {
+      scroller(mouseVars.start.target, pixlesMoved);
+    }
+
+    scrollVars.time = mouseVars.current.time;
+    scrollVars.x = mouseVars.current.x;
+    scrollVars.y = mouseVars.current.y;
+  }
+  else if (mouseVars.start.target) {
+    if (mouseVars.start.target.classList.contains('letScroll')) {
+      mouseVars.type = 'scrollable';
+      mouseVars.start.target = document.getElementById('toastPopup');
+      scrollVars.time = mouseVars.current.time;
+      scrollVars.x = mouseVars.current.x;
+      scrollVars.y = mouseVars.current.y;
+    }
+  }
+
   //update the mouse object with the current stuff:
-  mouseVars.targetCurrent = targ;
-  mouseVars.xCurrent = e.clientX;
-  mouseVars.yCurrent = e.clientY;
+  mouseVars.current.target  = targ;
+  mouseVars.current.time = zTime;
+  mouseVars.current.x = e.clientX;
+  mouseVars.current.y = e.clientY;
   if (mouseVars.type === 'vol') {
     volMove();
   } else if (mouseVars.type === 'click') {
-        if (((mouseVars.xStart + 25) < e.clientX)
-        || ((mouseVars.xStart - 25) > e.clientX)
-        || ((mouseVars.yStart + 25) < e.clientY)
-        || ((mouseVars.yStart - 25) > e.clientY)
-       ) {
+    if (((mouseVars.start.x + 25) < e.clientX) || ((mouseVars.start.x - 25) > e.clientX) || ((mouseVars.start.y + 25) < e.clientY) || ((mouseVars.start.y - 25) > e.clientY)) {
       mouseVars.type = 'drag';
       window.clearTimeout(mouseVars.clickTimer);
     }
   }
   //only render is a button is pressed... like if the user is dragging.
-  if  (mouseVars.button) {
+  if (mouseVars.button) {
     anEvent();
   }
 }
@@ -256,19 +274,36 @@ function mouseUp(e) {
   if (mouseVars.type == 'vol') {
     storageSave('vol', globVol.toFixed(2));
     //no point in recording something like 15.00000033
+  } else if (mouseVars.button == 1) {
+    if (mouseVars.type == 'scrollable' || mouseVars.type === 'scrolling') {
+      //console.log('begin auto scroll...');
+      var tNow = new Date().getTime();
+      var framesPerSecond = (1000 / (scrollVars.time - mouseVars.current.time));
+      var pixlesMoved = (mouseVars.current.y - scrollVars.y);
+      var speedInPixelsPerSecond = pixlesMoved * framesPerSecond;
+      //console.log(speedInPixelsPerSecond);
+
+      if (pixlesMoved) {
+        scroller(mouseVars.start.target, pixlesMoved);
+      }
+      //speed should now be pixels per second, averaged over the last 5 frames.
+      //console.log('average speed = ' + zSpeed);
+      //mouseVars.start.target gets cleared, so make a seperate pointer.
+      var zDiv = document.getElementById(mouseVars.start.target.id);
+      window.requestAnimationFrame(function() {
+        divScroller(zDiv, -speedInPixelsPerSecond, tNow)
+      });
+    }
   }
   mouseClear();
-
   anEvent();
 }
-function mouseWheel(e) {
-  //for zooming in/out, changing speed, etc.
+function mouseWheel(e) {//for zooming in/out, changing speed, etc.
 }
 function mouseClick() {
-  if (mouseVars.targetCurrent.id === 'updateClose') {
+  if (mouseVars.current.target .id === 'toastClose') {
     upNotClose();
-  }
-  else {
+  } else {
     if (!randing) {
       randing = 1;
       endUp();
@@ -340,17 +375,17 @@ function touchUp(e) {
   }
 }
 function volDown() {
-  mouseVars.targetStart = document.getElementById('vol-Iv');
+  mouseVars.start.target = document.getElementById('vol-Iv');
   mouseVars.type = 'vol';
   volMove();
 }
 function volMove() {
   //find the percentage of the the slider's left
-  var zWidth = mouseVars.targetStart.parentNode.offsetWidth;
-  var zLeft = mouseVars.targetStart.parentNode.offsetLeft + document.getElementById('cont').offsetLeft;
-  var sliderLeft = mouseVars.xCurrent - zLeft + 2;
-  sliderLeft -= (mouseVars.targetStart.offsetWidth / 2);
-  var sliderPercent = (sliderLeft / (zWidth - mouseVars.targetStart.offsetWidth)) * 100;
+  var zWidth = mouseVars.start.target.parentNode.offsetWidth;
+  var zLeft = mouseVars.start.target.parentNode.offsetLeft + document.getElementById('cont').offsetLeft;
+  var sliderLeft = mouseVars.current.x - zLeft + 2;
+  sliderLeft -= (mouseVars.start.target.offsetWidth / 2);
+  var sliderPercent = (sliderLeft / (zWidth - mouseVars.start.target.offsetWidth)) * 100;
   if (sliderPercent < 0) {
     sliderPercent = 0;
   } else if (sliderPercent > 100) {
@@ -359,9 +394,9 @@ function volMove() {
   globVol = (sliderPercent / 100);
   document.getElementById('vol%').innerHTML = Math.round(sliderPercent) + '%';
   //recalculate to offset width of the slider iteself
-  var zDiff = (zWidth - mouseVars.targetStart.offsetWidth) / zWidth;
+  var zDiff = (zWidth - mouseVars.start.target.offsetWidth) / zWidth;
   sliderPercent *= zDiff;
-  mouseVars.targetStart.style.left = sliderPercent + '%';
+  mouseVars.start.target.style.left = sliderPercent + '%';
 }
 function volUpdate() {
   var sliderPercent = (globVol * 100);
@@ -370,4 +405,68 @@ function volUpdate() {
   var zDiff = (document.getElementById('vol-Cv').offsetWidth - document.getElementById('vol-Iv').offsetWidth) / document.getElementById('vol-Cv').offsetWidth;
   sliderPercent *= zDiff;
   document.getElementById('vol-Iv').style.left = sliderPercent + '%';
+}
+function divScroller(targ, zSpeed, zTime) {
+  if (!targ || mouseVars.button) {
+    //if the element no longer exists, there is nothing to do.
+    return;
+  }
+  var tNow = new Date().getTime();
+  var tDiff = (tNow - zTime) / 1000;
+  var newSpeed = zSpeed;
+  var toScrollBy = (zSpeed * tDiff);
+  if ((tDiff > 0) && (zSpeed != 0) && (toScrollBy < 0.25 && toScrollBy > -0.25)) {
+    //scroll speed is too slow. Just stop the scrolling animation.
+    return;
+  }
+
+  //scroller(targ, (e.clientY - mouseVars.current.y));
+  scroller(targ, toScrollBy);
+  //now to calculate the next frame's scroll amount:
+  if (tDiff) {
+    /*
+      NOTE:
+      I've tried lots of different varients, but the scrolling up always takes longer than scrolling down
+      I've given up tring to understand that, and just reversing the speed to compensate
+      I am now just taking off a little more for scrolling up.
+      Hopefully, that will prove about right no matter what browser is used!
+    */
+    if (newSpeed < 0) {
+      newSpeed *= .925;
+    } else {
+      newSpeed *= .95;
+    }
+    //check for whether the newSpeed is going in the opposite direction
+    if ((zSpeed > 0 && newSpeed < 0) || (zSpeed < 0 && newSpeed > 0)) {
+      newSpeed = 0;
+    }
+  }
+  if (newSpeed) {
+    window.requestAnimationFrame(function() {
+      divScroller(targ, newSpeed, tNow)
+    });
+  }
+}
+
+function scroller(targ, toScrollBy) {
+  //console.log(toScrollBy);
+  var zTop = (targ.offsetTop + toScrollBy);
+  var longest = document.body.offsetHeight - targ.offsetHeight;
+  var smallest = document.body.offsetHeight - document.getElementById('unp').offsetHeight;
+  if (longest > zTop) {
+    zTop = longest;
+  }
+  else if (zTop > smallest) {
+    zTop = smallest;
+  }
+  targ.style.top = zTop + 'px';
+
+  //if there is a close button, make sure it stays on-screen.
+  if (document.getElementById('toastClose')) {
+    //might be the scroll value perhaps... dunno yet.
+    if (targ.offsetTop < 0) {
+      document.getElementById('toastClose').style.top = 
+      (-targ.offsetTop + targ.scrollTop + 3) + 'px';
+    }
+  }
 }

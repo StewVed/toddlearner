@@ -1,4 +1,4 @@
-var zAppCache = 'toddlearner-2017-1-21';
+var zAppCache = 'toddlearner-2017-1-24';
 self.addEventListener('install', function(event) {
   event.waitUntil(caches.open(zAppCache).then(function(cache) {
     return cache.addAll([
@@ -9,6 +9,7 @@ self.addEventListener('install', function(event) {
       , './main.css'
       , './main.js'
       , './storage.js'
+      , './texts.js'
     /*
       Do not include:
       index.html
