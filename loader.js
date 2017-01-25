@@ -22,7 +22,7 @@ var fileList = ['initialize', 'inputs', 'main', 'storage', 'texts']
 
 
 //check the toaster for scrolling etc.:
-sw_active_activated('u');
+//sw_active_activated('u');
 
 if ('serviceWorker' in navigator) {
   //https://w3c.github.io/ServiceWorker/#install
