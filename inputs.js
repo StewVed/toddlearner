@@ -301,7 +301,7 @@ function mouseUp(e) {
 function mouseWheel(e) {//for zooming in/out, changing speed, etc.
 }
 function mouseClick() {
-  if (mouseVars.current.target .id === 'toastClose') {
+  if (mouseVars.current.target.id === 'toastClose') {
     upNotClose();
   } else {
     if (!randing) {

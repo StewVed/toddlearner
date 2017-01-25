@@ -5,15 +5,29 @@ body {
   margin: 0;
   font-family: sans-serif;
 }
+ul {
+  font-size: .8em;
+}
 .B {
   font-weight:bold;
 }
 .C {
   text-align:center;
 }
+.Re {
+  color:red;
+}
+.Gr {
+  color:green;
+}
+.Bl {
+  color:blue;
+}
+.Or {
+  color:orange;
+}
 #cont {
   position: absolute;
-  text-align: center;
   background-color: whitesmoke;
 }
 
@@ -190,14 +204,9 @@ body {
   position: absolute;
   top: 80%;
   width: 100%;
-  /* height: 100%; */
   border-top: 4px solid hsl(210, 100%, 50%);
-  /* transition: .7s ease-in; */
   animation: popupBouncer .6s ease-in-out;
-  font-size: 1.2em;
-  font-weight: bold;
-  background-color: hsla(0, 0%, 100%, .9);
-  text-align: center;
+  background-color: hsla(0, 0%, 100%, .95);
 }
 @keyframes popupBouncer {
   0% {top: 100%;}
@@ -215,4 +224,6 @@ body {
 }
 #unp {
   padding: 2% 10%;
+  text-align: center;
+  font-weight: bold;
 }

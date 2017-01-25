@@ -1,43 +1,93 @@
+var zAll = '<span class="B'
+  , zNew = zAll + ' Bl">New Stuff: </span>'
+  , zImp = zAll + ' Gr">Improvement: </span>'
+  , zBug = zAll + ' Re">Bug-Fix: </span>'
+  , zDev = zAll + ' Or">Development: </span>'
+
 var appCL =
   '<hr>' +
-  '<span class="B C">24th January 2017</span> ' +
-  '<br>' +
-  '<ul><li><span class="B">New Stuff: </span>Swipe-up changelog added under toast popup on update.' +
+  '<p class="B C">25th January 2017</p> ' +
+  '<ul><li>' + zBug + 'Sometimes could not press an object (typo).' +
+  '</li><li>' + zDev + 'comment out toast popup test.' +
+  '</li><li>' + zImp + 'Put some color in to this change log.' +
   '</li></ul>' +
   '<hr>' +
-  '<span class="B C">21st January 2017</span> ' +
-  '<br>' +
-  '<ul><li><span class="B">Improvement: </span>Better notifications on updates.' +
-  '</li><li><span class="B">Scroll: </span>test Scroller.' +
-  '</li><li><span class="B">Scroll: </span>test Scroller.' +
-  '</li><li><span class="B">Scroll: </span>test Scroller.' +
-  '</li><li><span class="B">Scroll: </span>test Scroller.' +
-  '</li><li><span class="B">Scroll: </span>test Scroller.' +
-  '</li><li><span class="B">Scroll: </span>test Scroller.' +
-  '</li><li><span class="B">Scroll: </span>test Scroller.' +
-  '</li><li><span class="B">Scroll: </span>test Scroller.' +
-  '</li><li><span class="B">Scroll: </span>test Scroller.' +
-  '</li><li><span class="B">Scroll: </span>test Scroller.' +
-  '</li><li><span class="B">Scroll: </span>test Scroller.' +
-  '</li><li><span class="B">Scroll: </span>test Scroller.' +
+  '<p class="B C">24th January 2017</p> ' +
+  '<ul><li>' + zNew + 'Swipe-up changelog added under toast popup on update.' +
   '</li></ul>' +
   '<hr>' +
-  '<span class="B C">19th January 2017</span> ' +
-  '<br>' +
-  '<ul><li><span class="B">Dev: </span>more work on the ServiceWorker.' +
-  '</li><li><span class="B">Scroll: </span>test Scroller.' +
-  '</li><li><span class="B">Scroll: </span>test Scroller.' +
-  '</li><li><span class="B">Scroll: </span>test Scroller.' +
-  '</li><li><span class="B">Scroll: </span>test Scroller.' +
-  '</li><li><span class="B">Scroll: </span>test Scroller.' +
-  '</li><li><span class="B">Scroll: </span>test Scroller.' +
-  '</li><li><span class="B">Scroll: </span>test Scroller.' +
-  '</li><li><span class="B">Scroll: </span>test Scroller.' +
-  '</li><li><span class="B">Scroll: </span>test Scroller.' +
-  '</li><li><span class="B">Scroll: </span>test Scroller.' +
-  '</li><li><span class="B">Scroll: </span>test Scroller.' +
-  '</li><li><span class="B">Scroll: </span>test Scroller.' +
+  '<p class="B C">21st January 2017</p> ' +
+  '<ul><li>' + zImp + 'Better notifications on updates.' +
   '</li></ul>' +
+  '<hr>' +
+  '<p class="B C">19th January 2017</p> ' +
+  '<ul><li>' + zDev + 'more work on the ServiceWorker.' +
+  '</li></ul>' +
+
+  '<hr>' +
+  '<br>' +
+  '<br>' +
+  '<br>' +
+  '<br>' +
+  '<br>' +
+  '<p class="C"><span class="B">Scroll: </span>test Scroller.</p>' +
+  '<br>' +
+  '<br>' +
+  '<br>' +
+  '<br>' +
+  '<br>' +
+  
+  '<hr>' +
+  '<br>' +
+  '<br>' +
+  '<br>' +
+  '<br>' +
+  '<br>' +
+  '<p class="C"><span class="B">Scroll: </span>test Scroller.</p>' +
+  '<br>' +
+  '<br>' +
+  '<br>' +
+  '<br>' +
+  '<br>' +
+  
+  '<hr>' +
+  '<br>' +
+  '<br>' +
+  '<br>' +
+  '<br>' +
+  '<br>' +
+  '<p class="C"><span class="B">Scroll: </span>test Scroller.</p>' +
+  '<br>' +
+  '<br>' +
+  '<br>' +
+  '<br>' +
+  '<br>' +
+  
+  '<hr>' +
+  '<br>' +
+  '<br>' +
+  '<br>' +
+  '<br>' +
+  '<br>' +
+  '<p class="C"><span class="B">Scroll: </span>test Scroller.</p>' +
+  '<br>' +
+  '<br>' +
+  '<br>' +
+  '<br>' +
+  '<br>' +
+  
+  '<hr>' +
+  '<br>' +
+  '<br>' +
+  '<br>' +
+  '<br>' +
+  '<br>' +
+  '<p class="C"><span class="B">Scroll: </span>test Scroller.</p>' +
+  '<br>' +
+  '<br>' +
+  '<br>' +
+  '<br>' +
+  '<br>' +
   '<hr>' +
   '<hr>';
 

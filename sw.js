@@ -1,4 +1,4 @@
-var zAppCache = 'toddlearner-2017-1-24';
+var zAppCache = 'toddlearner-2017-1-25';
 self.addEventListener('install', function(event) {
   event.waitUntil(caches.open(zAppCache).then(function(cache) {
     return cache.addAll([

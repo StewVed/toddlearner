@@ -70,6 +70,7 @@ var nums = []
   , {text:'heart', path:null}
 ]
 , gameWindow    //vars to hold variables for the window
+//gameVars woz ere! Now in loader file so app knows when it can display a popup toast.
 , zObjects = []
 ;
 

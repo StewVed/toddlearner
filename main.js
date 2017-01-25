@@ -266,6 +266,10 @@ function endUp() {
       userWrong(parseInt(ting));
     }
   }
+  else {
+    gameVars.gameObject = null;
+    randing = 0;
+  }
 }
 function endTurn() {
   combo = 0;
