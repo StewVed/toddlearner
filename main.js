@@ -107,8 +107,8 @@ function createObjects() {
 }
 
 function randObject() {
-    var nType = Math.round(Math.random() * 4);
-    var nColor = Math.round(Math.random() * 6);
+    var nType = Math.round(Math.random() * (zShapes.length-1));
+    var nColor = Math.round(Math.random() * (hsls.length-1));
     var allGood = 1;
 
     //while these two match another object, re-choose.
@@ -189,11 +189,18 @@ function drawObjects() {
   );
   //right diagonal line
   zShapes[4].path.lineTo(gScale(.5), gScale(1));
-
   zShapes[4].path.closePath();
-  //add more objects here :D
+/*
+  //Numbers from 0 - 9
+  for (var x = 5; x < 15; x++) {
+    zShapes[x].path = new Path2D();
+    // addText(DOMString text, CanvasDrawingStyles styles, any transformation, any x_path, optional unrestricted double y_maxWidth, optional unrestricted double maxWidth)
+    zShapes[x].path = (x-5).toString(); //should be 0-9
+  }
 
-
+  I think I will have to only do a number of objects and ask for that number.
+  eg. where are the 3 red squares, and have 3 small red squares in a single tile.
+*/
   //render the new shapes
   gameVars.go = 1;
 }
@@ -217,7 +224,7 @@ function userAsk() {
   randing = 0;
 }
 function userRight() {
-  gameVars.gameForeText = 'Yes! That is the ' + 
+  gameVars.gameForeText = 'Yes! That is the ' +
   hsls[zObjects[gameVars.picked].color].text +
   ' ' +
   zShapes[zObjects[gameVars.picked].type].text +
@@ -314,6 +321,9 @@ function end1(num, x) {
 }
 function findObject(e) {
 
+/*
+could I just use: boolean ctx.isPointInPath(path, x, y);
+*/
   var ting = null;
   var mx = (Math.floor((e.clientX - document.getElementById('cont').offsetLeft) / gameVars.scale));
   var my = (Math.floor((e.clientY - document.getElementById('cont').offsetTop) / gameVars.scale));
@@ -420,6 +430,8 @@ function gameRenderBack() {
 function gameRenderMain() {
   //clear the entire canvas:
   gameVars.gameMainCTX.clearRect(0,0,gameWindow.width,gameWindow.height);
+  //to handle the numbers and letters, set a scaled font size
+  gameVars.gameMainCTX.font = 'bold ' + (gameVars.scale * 1650) + '% Arial'; //
 
   //loop through all o fthe objects and fill/draw each one's path
   for (var x of zObjects) {
@@ -427,7 +439,16 @@ function gameRenderMain() {
     var b = Math.floor(x.y * gameVars.scale);
     gameVars.gameMainCTX.fillStyle = hsls[x.color].text;
     gameVars.gameMainCTX.translate(a, b);
-    gameVars.gameMainCTX.fill(zShapes[x.type].path);
+    if (x.type < 5) {
+      gameVars.gameMainCTX.fill(zShapes[x.type].path);
+    }
+    else if (x.type >= 5) {
+      gameVars.gameMainCTX.fillText(
+          zShapes[x.type].path
+        , Math.round(23 * gameVars.scale)//((50 * gameVars.scale) / 2) - Math.round(gameVars.gameForeCTX.measureText(zShapes[x.type].path).width / 2) //horizontal start coordinate
+        , Math.round(190 * gameVars.scale) //vertical start coordinate
+      );
+    }
     gameVars.gameMainCTX.translate(-a, -b);
   }
 
@@ -451,36 +472,4 @@ function gameRenderFore() {
     , (gameWindow.width / 2) - Math.round(gameVars.gameForeCTX.measureText(gameVars.gameForeText).width / 2) //horizontal start coordinate
     , Math.round(300 * gameVars.scale) //vertical start coordinate
   );
-}
-
-
-// example: soundBeep('sine', 500, 1, 100);setTimeout(function(){soundBeep('sine', 750, 1, 100)}, 100);
-function soundBeep(type, frequency, volume, duration) {
-  //make the volume comform to the globally set volume
-  volume *= globVol;
-  volume *= .5;
-  //make the entire game queiter.
-  //create a HTML5 audio occilator thingy
-  var zOscillator = WinAudioCtx.createOscillator();
-  //create a HTML5 audio volume thingy
-  var zGain = WinAudioCtx.createGain();
-  //link the volume to the occilator
-  zOscillator.connect(zGain);
-  zGain.connect(WinAudioCtx.destination);
-  //set up the audio beep to what is needed:
-  zOscillator.type = type;
-  //default = 'sine' — other values are 'square', 'sawtooth', 'triangle' and 'custom'
-  zOscillator.frequency.value = frequency;
-  zGain.gain.value = volume;
-  //start the audio beep, and set a timeout to stop it:
-  zOscillator.start();
-  window.setTimeout(function() {
-    window.setTimeout(function() {
-      zOscillator.stop()
-    }, 25);
-    //stop once the volume is riiiight down.
-    zGain.gain.value = 0.001;
-    //hopefully stop that cilck at the end that can happen.
-  }, duration);
-  //default to qurter of a second for the beep if no time is specified
 }

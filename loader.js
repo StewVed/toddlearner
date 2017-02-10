@@ -7,7 +7,7 @@
 //vars for the game itself
 //put here so that I can check when the game has initialized
 var gameVars;
-var fileList = ['initialize', 'inputs', 'main', 'storage', 'texts']
+var fileList = ['initialize', 'inputs', 'main', 'sounds', 'storage', 'texts']
   , isLoaded = 0
   , isUpdated = 0
   , isOffline = 0
@@ -172,6 +172,7 @@ function upNotClose() {
 
 
 //now for the file loading portion of the loader file.
+fLoad('toddlearnerWave.wav','audio','','sounds','', 0);
 //loop through the required files, and load then now.
 for (var fileName of fileList) {
   fLoad(fileName + '.js', 'script', fileName, fileName + ' file', '', 0);
@@ -204,6 +205,9 @@ function fLoad(zSrc, zType, zId, zText, zLoad, WinNo) {
     if (zType === 'img') {
       xhr.responseType = 'blob';
     }
+    else if (zType === 'audio') {
+      xhr.responseType = 'arraybuffer';
+    }
     //create an onLoad event for when the server has sent the data through to the browser
     xhr.addEventListener('loadend', function() {
       if (loadingVars[zFileName].xhr) {
@@ -218,6 +222,16 @@ function fLoad(zSrc, zType, zId, zText, zLoad, WinNo) {
           //make sure there is no src
           zElem.src = window.URL.createObjectURL(xhr.response);
           //add the downloaded src to the element
+        } else if (zType === 'audio') {
+          audioCtx.decodeAudioData(xhr.response).then(function(decodedData) {
+            //my hope is that I can use the audioSprite var for the
+            //decodedData, then use bits of the audioSprite for the
+            //actual soundBuffers.
+            audioSprite = audioCtx.createBufferSource();
+            audioSprite.buffer = decodedData;
+            //dunno if this is needed, as this file won't be played.
+            audioSprite.connect(audioCtx.destination);
+          });
         } else {
           zElem.innerHTML = xhr.responseText;
         }
@@ -243,16 +257,44 @@ function fLoad(zSrc, zType, zId, zText, zLoad, WinNo) {
   });
 }
 function fLoadSimple(fileName) {
-  var firstScript = document.getElementsByTagName('script')[0];
-  var zScript = document.createElement('script');
-  //zScript.type = 'text/javascript'; //needed in modern browsers?!Q?
-  zScript.id = fileName + 'l';
-  zScript.src = fileName + '.js';
-  zScript.addEventListener('load', function() {
-    this.id = this.id.slice(0, -1);
-    filesLoadedCheck();
-  });
-  firstScript.parentNode.insertBefore(zScript, firstScript);
+  if (fileName === 'toddlearnerWave') {
+    var firstScript = document.getElementsByTagName('audio')[0];
+    var zScript = document.createElement('audio');
+    //zScript.type = 'text/javascript'; //needed in modern browsers?!Q?
+    zScript.id = fileName + 'l';
+    zScript.src = fileName + '.wav';
+    zScript.addEventListener('load', function() {
+      this.id = this.id.slice(0, -1);
+
+      audioSprite = audioCtx.createMediaElementSource(this);
+      //I hope to use the pure audio API instead of the <audio> element.
+      //audioCtx.decodeAudioData('sounds.wav').then(function(decodedData) {
+      //my hope is that I can use the audioSprite var for the
+      //decodedData, then use bits of the audioSprite for the
+      //actual soundBuffers.
+      //audioSprite = audioCtx.createBufferSource();
+      //audioSprite.buffer = decodedData;
+      //dunno if this is needed, as this file won't be played.
+      audioSprite.connect(audioCtx.destination); 
+
+      filesLoadedCheck();
+    });
+    firstScript.parentNode.insertBefore(zScript, firstScript);
+    })
+  }
+  else {
+    var firstScript = document.getElementsByTagName('script')[0];
+    var zScript = document.createElement('script');
+    //zScript.type = 'text/javascript'; //needed in modern browsers?!Q?
+    zScript.id = fileName + 'l';
+    zScript.src = fileName + '.js';
+    zScript.addEventListener('load', function() {
+      this.id = this.id.slice(0, -1);
+      filesLoadedCheck();
+    });
+    firstScript.parentNode.insertBefore(zScript, firstScript);
+  }
+
 }
 function fLoadProgressBar(zFileName, zText) {
   if (document.getElementById('loading')) {

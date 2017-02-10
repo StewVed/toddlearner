@@ -4,7 +4,7 @@ var killFS = (document.exitFullscreen || document.mozCancelFullScreen || documen
 //kick up fullscreen:
 var getFS = (document.documentElement.requestFullscreen || document.documentElement.mozRequestFullScreen || document.documentElement.webkitRequestFullscreen || document.documentElement.msRequestFullscreen);
 //mousewheel event, based on the all-encompassing mozDev version
-var mouseWheelType = 'onwheel'in document.createElement('div') ? 'wheel' : document.onmousewheel ? 'mousewheel' : 'DOMMouseScroll';
+var mouseWheelType = 'onwheel' in document.createElement('div') ? 'wheel' : document.onmousewheel ? 'mousewheel' : 'DOMMouseScroll';
 /*
  * Keys to ignore... alt-tab is annoying, so don't bother with alt for example
  * 16 = shift
@@ -35,10 +35,17 @@ var gamepadReMap = [2,3,0,1];
 var keyVars = [];
 //For touch-enabled devices
 var touchVars = [];
-//global array to handle ongoing touch events
-// Create the main sound var
-var WinAudioCtx = new (window.AudioContext || window.webkitAudioContext);
-
+// Create the audio part of the game:
+//the main audio file will be put in here:
+var audioSprite;
+//I hate vendor prefixes! Why not just keep to the W3 specs?!?!?!
+window.AudioContext = window.AudioContext || window.webkitAudioContext;
+var audioCtx = new window.AudioContext();
+/*
+  the plan is to create loads of little audioBuffers from the sprite,
+  connecting them all to the AudioContext, then since they are all in
+  memory, they should be VERY fast for playback of eack sound.
+*/
 
 var nums = []
 , zSize
@@ -51,23 +58,62 @@ var nums = []
 , t = 600       //for how long something takes to animate... pause time.
 , saveY         //whether the user allows saving to HTML5 local storage
 
+, zWords = [
+    {text:'which', aSound:'0,.42'}
+  , {text:'is', aSound:'.45,.8'}
+  , {text:'the', aSound:'8.8,1.28'}
+  , {text:'that', aSound:'1.38,1.79'}
+  , {text:'a', aSound:'1.86,2.32'}
+  , {text:'yes!', aSound:'2.54,3.18'}
+]
 //I think I will just do darker and lighter as 25% and 90% or somerthing.
 //eg. hslClrs[0][0] is 'red', hslClrs[2][2] is 48
 , hsls = [
-   {text:'red', h:0, l:50}
- , {text:'orange', h:31, l:50}
- , {text:'yellow', h:60, l:48}
- , {text:'green', h:120, l:45}
- , {text:'blue', h:220, l:50}
- , {text:'purple', h:270, l:50}
- , {text:'pink', h:320, l:50}
+   {text:'red', h:0, l:50, aStart:50, aEnd:100}
+ , {text:'orange', h:31, l:50, aStart:50, aEnd:100}
+ , {text:'yellow', h:60, l:48, aStart:50, aEnd:100}
+ , {text:'green', h:120, l:45, aStart:50, aEnd:100}
+ , {text:'blue', h:220, l:50, aStart:50, aEnd:100}
+ , {text:'purple', h:270, l:50, aStart:50, aEnd:100}
+ , {text:'pink', h:320, l:50, aStart:50, aEnd:100}
  ]
 , zShapes = [
-    {text:'circle', path:null}
-  , {text:'triangle', path:null}
-  , {text:'square', path:null}
-  , {text:'star', path:null}
-  , {text:'heart', path:null}
+    {text:'circle', path:null, aStart:50, aEnd:100}
+  , {text:'triangle', path:null, aStart:50, aEnd:100}
+  , {text:'square', path:null, aStart:50, aEnd:100}
+  , {text:'star', path:null, aStart:50, aEnd:100}
+  , {text:'heart', path:null, aStart:50, aEnd:100}
+  /*
+  after putting this in, I realised that you'd get 3-letter words
+  randomly created... this is not the intent, so no letters in this game.
+  I'll stick to an amount of coloured shapes I think.
+  , {text:'a', path:'A', aStart:50, aEnd:100}
+  , {text:'b', path:'B', aStart:50, aEnd:100}
+  , {text:'c', path:'C', aStart:50, aEnd:100}
+  , {text:'d', path:'D', aStart:50, aEnd:100}
+  , {text:'e', path:'E', aStart:50, aEnd:100}
+  , {text:'f', path:'F', aStart:50, aEnd:100}
+  , {text:'g', path:'G', aStart:50, aEnd:100}
+  , {text:'h', path:'H', aStart:50, aEnd:100}
+  , {text:'i', path:'I', aStart:50, aEnd:100}
+  , {text:'j', path:'J', aStart:50, aEnd:100}
+  , {text:'k', path:'K', aStart:50, aEnd:100}
+  , {text:'l', path:'L', aStart:50, aEnd:100}
+  , {text:'m', path:'M', aStart:50, aEnd:100}
+  , {text:'n', path:'N', aStart:50, aEnd:100}
+  , {text:'o', path:'O', aStart:50, aEnd:100}
+  , {text:'p', path:'P', aStart:50, aEnd:100}
+  , {text:'q', path:'Q', aStart:50, aEnd:100}
+  , {text:'r', path:'R', aStart:50, aEnd:100}
+  , {text:'s', path:'S', aStart:50, aEnd:100}
+  , {text:'t', path:'T', aStart:50, aEnd:100}
+  , {text:'u', path:'U', aStart:50, aEnd:100}
+  , {text:'v', path:'V', aStart:50, aEnd:100}
+  , {text:'w', path:'W', aStart:50, aEnd:100}
+  , {text:'x', path:'X', aStart:50, aEnd:100}
+  , {text:'y', path:'Y', aStart:50, aEnd:100}
+  , {text:'z', path:'Z', aStart:50, aEnd:100}
+  */
 ]
 , gameWindow    //vars to hold variables for the window
 //gameVars woz ere! Now in loader file so app knows when it can display a popup toast.
