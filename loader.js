@@ -128,16 +128,17 @@ function upNotCheck(msg) {
   }
 }
 function upNotOpen(msg) {
+  var newWindow;
   if (document.getElementById('toastPopup')) {
     //change toastPopup from installed to updated.
-    document.getElementById('unp').innerHTML = msg;
+    newWindow = document.getElementById('unp');
   }
   else {
-    var newWindow = document.createElement('div');
+    newWindow = document.createElement('div');
     newWindow.id = 'toastPopup';
     document.body.appendChild(newWindow);
-    newWindow.innerHTML = '<div id="toastClose">X</div><p id="unp">' + msg + '<p/>';
   }
+  newWindow.innerHTML = '<div id="toastClose">X</div><p id="unp">' + msg + '<p/>';
   newWindow.classList.add('letScroll');
   upSetClass(newWindow);
 }
@@ -229,8 +230,13 @@ function fLoad(zSrc, zType, zId, zText, zLoad, WinNo) {
             //actual soundBuffers.
             audioSprite = audioCtx.createBufferSource();
             audioSprite.buffer = decodedData;
+            var gainNode = audioCtx.createGain();
             //dunno if this is needed, as this file won't be played.
-            audioSprite.connect(audioCtx.destination);
+            audioSprite.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            //now that the audio is loaded and buffered, init the
+            //individual sounds from the soundsprite:
+            initSounds();
           });
         } else {
           zElem.innerHTML = xhr.responseText;
@@ -258,12 +264,11 @@ function fLoad(zSrc, zType, zId, zText, zLoad, WinNo) {
 }
 function fLoadSimple(fileName) {
   if (fileName === 'toddlearnerWave') {
-    var firstScript = document.getElementsByTagName('audio')[0];
-    var zScript = document.createElement('audio');
+    var zElem = document.createElement('audio');
     //zScript.type = 'text/javascript'; //needed in modern browsers?!Q?
-    zScript.id = fileName + 'l';
-    zScript.src = fileName + '.wav';
-    zScript.addEventListener('load', function() {
+    zElem.id = fileName + 'l';
+    zElem.src = fileName + '.wav';
+    zElem.addEventListener('load', function() {
       this.id = this.id.slice(0, -1);
 
       audioSprite = audioCtx.createMediaElementSource(this);
@@ -279,8 +284,7 @@ function fLoadSimple(fileName) {
 
       filesLoadedCheck();
     });
-    firstScript.parentNode.insertBefore(zScript, firstScript);
-    })
+    document.head.appendChild(zElem);
   }
   else {
     var firstScript = document.getElementsByTagName('script')[0];

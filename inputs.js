@@ -13,15 +13,16 @@ function anEvent() {
   gameVars.go = 1;
 }
 function bubbleStop(e) {
-  try {
-    e.preventDefault();
-    e.stopPropagation();
-  } catch (ex) {
-    mouseClear();
-    touchVars = [];
-    //just blank the touches back to nothing.
-    touchDown = null;
-  }
+  //try {
+    e.stopPropagation(); //stop the event bubbling
+    if (e.cancelable) {
+      e.preventDefault();//stop browser doing it's default action.
+    }
+  //} catch (ex) {
+  //  mouseClear();
+  //  touchVars = [];
+  //  touchDown = null;
+  //}
   //this can fail on touch if scrolling is running on an element at the time...like the uLauncher
 }
 function findTarget(e) {

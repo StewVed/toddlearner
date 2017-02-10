@@ -29,6 +29,13 @@ function initSounds() {
     I will try to load the audio file using the good old xhr approach,
     then add it to the audioBuffer.
   */
+  //audioSprite is an AudioBufferSourceNode.
+
+  //let's create a new audio thing, and use the audioSprite as it's src.
+
+  //var newAudio = 
+
+  audioSprite.start();
 }
 function soundPlay() {
   //
