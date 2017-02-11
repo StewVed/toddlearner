@@ -264,27 +264,9 @@ function fLoad(zSrc, zType, zId, zText, zLoad, WinNo) {
 }
 function fLoadSimple(fileName) {
   if (fileName === 'toddlearnerWave') {
-    var zElem = document.createElement('audio');
-    //zScript.type = 'text/javascript'; //needed in modern browsers?!Q?
-    zElem.id = fileName + 'l';
-    zElem.src = fileName + '.wav';
-    zElem.addEventListener('load', function() {
-      this.id = this.id.slice(0, -1);
-
-      audioSprite = audioCtx.createMediaElementSource(this);
-      //I hope to use the pure audio API instead of the <audio> element.
-      //audioCtx.decodeAudioData('sounds.wav').then(function(decodedData) {
-      //my hope is that I can use the audioSprite var for the
-      //decodedData, then use bits of the audioSprite for the
-      //actual soundBuffers.
-      //audioSprite = audioCtx.createBufferSource();
-      //audioSprite.buffer = decodedData;
-      //dunno if this is needed, as this file won't be played.
-      audioSprite.connect(audioCtx.destination); 
-
-      filesLoadedCheck();
-    });
-    document.head.appendChild(zElem);
+    //don't bother trying to make a buffer from the wav through
+    //and audio element...or any other way - seems impossible.
+    //rely purely on fload through serviceworker/server.
   }
   else {
     var firstScript = document.getElementsByTagName('script')[0];
