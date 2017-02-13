@@ -59,12 +59,12 @@ var nums = []
 , saveY         //whether the user allows saving to HTML5 local storage
 
 , zWords = [
-    {text:'which', 'aBuffer':null, aSound:'0,.42'}
-  , {text:'is', 'aBuffer':null, aSound:'.45,.8'}
-  , {text:'the', 'aBuffer':null, aSound:'8.8,1.28'}
-  , {text:'that', 'aBuffer':null, aSound:'1.38,1.79'}
-  , {text:'a', 'aBuffer':null, aSound:'1.86,2.32'}
-  , {text:'yes!', 'aBuffer':null, aSound:'2.54,3.18'}
+    {text:'which', aStart:0.1, aEnd:.3}
+  , {text:'is', aStart:.40, aEnd:.4}
+  , {text:'the', aStart:.92, aEnd:.4}
+  , {text:'that', aStart:1.38, aEnd:.4}
+  , {text:'a', aStart:2.35, aEnd:.3}
+  , {text:'yes!', aStart:2.84, aEnd:.7}
 ]
 //I think I will just do darker and lighter as 25% and 90% or somerthing.
 //eg. hslClrs[0][0] is 'red', hslClrs[2][2] is 48

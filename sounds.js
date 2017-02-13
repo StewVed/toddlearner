@@ -39,14 +39,14 @@ function initSounds() {
 */
 
   //dunno if this is needed, as this file won't be played.
-  audioSprite.connect(audioCtx.destination);
+  //audioSprite.connect(audioCtx.destination);
 
   //add my own variable to the audio element variable thingy
   //audioSprite.stopTime = 3.25;
   //add event listener for the time update of the playing audio.
-  audioSprite.addEventListener('timeupdate', function() {
-      soundTimeUpdate(this)
-    });
+  //audioSprite.addEventListener('timeupdate', function() {
+  //    soundTimeUpdate(this)
+  //  });
   /*
     audioSprite.addEventListener('load', function() {
       soundTimeUpdate(this)
@@ -54,20 +54,19 @@ function initSounds() {
   */
 
 
-  var tmpBuffer = audioSprite.buffer.getChannelData(0);
+  //var tmpBuffer = audioSprite.buffer.getChannelData(0);
   //as I understand it, tmpBuffer should be a Float32Array.
   //I should now be able to use slices of it to make the
   //buffers for the individual words!
 
   //test#1 can I access an element in the array?
-  var t1 = tmpBuffer[0];
+  //var t1 = tmpBuffer[0];
 
   //test#2 can I copy a slice of the array?
-  var t2 = tmpBuffer.slice(0,10);
+  //var t2 = tmpBuffer.slice(0,10);
 
   //awesome. Now, let us try to put a little bit of the array
   //in to a new audioBuffer.
-  var zSampleRate = audioSprite.buffer.sampleRate;
 /*
   I know in seconds where/when each word is in my sprite file.
   To find the frame numbers of the seconds, I should be able to
@@ -121,36 +120,77 @@ button.onclick = function() {
   // start the source playing
   source.start();
 */
+  //var zSampleRate = audioSprite.buffer.sampleRate;
 
-  //Using the knowlage learned from the code above, let us try!
-  var zFrameStart = 0;
-  var zFrameEnd = zSampleRate * .42;
-  var zFrameLength = zFrameEnd - zFrameStart
-  var tmpAudioBuffer = audioCtx.createBuffer(1, zFrameLength, zSampleRate);
-  var tmpAudioBufferBuffer = tmpAudioBuffer.getChannelData(0);
+/*
+  for (var x of zWords) {
+    //Using the knowlage learned from the code above, let us try!
+    var zFrameStart = x.aStart;
+    var zFrameEnd = zSampleRate * x.aEnd;
+    var zFrameLength = zFrameEnd - zFrameStart
+    var tmpAudioBuffer = audioCtx.createBuffer(1, zFrameLength, zSampleRate);
+    var tmpAudioBufferBuffer = tmpAudioBuffer.getChannelData(0);
 
-  for (var x = zFrameStart; x < zFrameEnd; x++) {
-     tmpAudioBufferBuffer[x] = tmpBuffer[x];
+    for (var y = zFrameStart; y < zFrameEnd; y++) {
+       tmpAudioBufferBuffer[y] = tmpBuffer[y];
+    }
+
+    //could I just do:
+    //tmpAudioBufferBuffer = tmpBuffer.slice(zFrameStart,zFrameEnd);
+
+    x.aBuffer = audioCtx.createBufferSource();
+    x.aBuffer.buffer = tmpAudioBuffer;
+    x.aBuffer.connect(audioCtx.destination);
   }
-
-  //could I just do:
-  //tmpAudioBufferBuffer = tmpBuffer.slice(zFrameStart,zFrameEnd);
-
-  //pause here - VERY useful for debugging obfucated scripts...
+    //pause here - VERY useful for debugging obfucated scripts...
   //like ones that are dynamically loaded!
+  //debugger;
+*/
+
+  //new version - make throwaway buffers for each and every time
+  //a sound needs to be played. Apparently, this is how it should 
+  //be done, instead of keeping each sound effect in cache and playing when needed.
+  /*
+  setTimeout(function() {
+      soundPlay(zWords[0]);
+    }, 205);
+  */
+
+  soundPlay(zWords[5]);
+}
+function soundPlay(a) {
+  if (a) {
+    var newSound = audioCtx.createBufferSource();
+    newSound.buffer = audioSprite;
+    newSound.connect(audioCtx.destination);
+    newSound.addEventListener('ended', function(){soundEnded(this)})
+    //debugger;
+    //look what I found!!!
+    //https://developer.mozilla.org/en-US/docs/Web/API/AudioBufferSourceNode/start
+    //awesome! so it is simply (delay, start time within buffer, how long to play for)
+    //times are in seconds, and can be VERY precise. eg. 1.34566345
+    newSound.start(0, a.aStart, a.aEnd);//  - audioCtx.currentTime
+    /*
+    if (a.aEnd) {
+      newSound.stop(audioCtx.currentTime + a.aEnd);//  - audioCtx.currentTime
+    }
+    */
+  }
+}
+function soundEnded(zElem) {
+  //this should fire when a buffer has stopped playing.
+  //I will use this to play the next word in the sequence...
+  /* TODO
+    make an array with the words that have to be shown and played.
+    eg.
+    wordList = [0,1,2]
+    for "Which is the"
+    now, the bugger is, how do I do the colour and shape?
+    multi array
+  */
   debugger;
-
-  var newAudioBuffer = audioCtx.createBufferSource();
-  newAudioBuffer.buffer = tmpAudioBuffer;
-  newAudioBuffer.connect(audioCtx.destination);
-
-
-
-  soundPlay(newAudioBuffer)
 }
-function soundPlay(zAudio) {
-  zAudio.start();
-}
+/*
 function soundTimeUpdate(zAudio) {
   //this doesn't fire. maybe audiobuffers don't have the event?
     debugger;
@@ -159,7 +199,7 @@ function soundTimeUpdate(zAudio) {
     zAudio.stop();
   }
 }
-
+*/
 
 
 

@@ -224,6 +224,7 @@ function userAsk() {
   randing = 0;
 }
 function userRight() {
+  soundPlay(zWords[5].aBuffer);
   gameVars.gameForeText = 'Yes! That is the ' +
   hsls[zObjects[gameVars.picked].color].text +
   ' ' +
@@ -238,6 +239,7 @@ function userRight() {
   }, 2000);
 }
 function userWrong(num) {
+  soundPlay(zWords[3].aBuffer);
   gameVars.gameForeText = 'That is a ' + 
   hsls[zObjects[num].color].text +
   ' ' +

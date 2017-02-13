@@ -228,14 +228,20 @@ function fLoad(zSrc, zType, zId, zText, zLoad, WinNo) {
             //my hope is that I can use the audioSprite var for the
             //decodedData, then use bits of the audioSprite for the
             //actual soundBuffers.
-            audioSprite = audioCtx.createBufferSource();
-            audioSprite.buffer = decodedData;
-            var gainNode = audioCtx.createGain();
+            //audioSprite = audioCtx.createBufferSource();
+            //audioSprite.buffer = decodedData;
+            //var gainNode = audioCtx.createGain();
             //dunno if this is needed, as this file won't be played.
-            audioSprite.connect(gainNode);
-            gainNode.connect(audioCtx.destination);
+            //audioSprite.connect(gainNode);
+            //gainNode.connect(audioCtx.destination);
             //now that the audio is loaded and buffered, init the
             //individual sounds from the soundsprite:
+
+            //instead of that, I want to just hold the decodedData
+            //in the audioSprite
+            audioSprite = decodedData;
+
+
             initSounds();
           });
         } else {
