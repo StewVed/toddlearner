@@ -108,7 +108,7 @@ function createObjects() {
 
 function randObject() {
     var nType = Math.round(Math.random() * (zShapes.length-1));
-    var nColor = Math.round(Math.random() * (hsls.length-1));
+    var nColor = Math.round(Math.random() * (zColors.length-1));
     var allGood = 1;
 
     //while these two match another object, re-choose.
@@ -210,47 +210,85 @@ function gScale(a) {
   return Math.floor(a * gameVars.scale);
 }
 
+function resetWordList() {
+  wordList = [];
+  wordList[0] = 2;
+}
+
 function userAsk() {
   gameVars.gameForeText = 'Which is the ' + 
-  hsls[zObjects[gameVars.picked].color].text +
+  zColors[zObjects[gameVars.picked].color].text +
   ' ' +
   zShapes[zObjects[gameVars.picked].type].text +
   '?';
   gameVars.gameForeColor = 'black';
 
-  //gameVars.gameForeText = 'Yes! That is the yellow triangle'; 
+  wordList.push('ask');
+  wordList.push(zWords[0]);
+  wordList.push(zWords[2]);
+  wordList.push(zWords[4]);
+  wordList.push(zColors[zObjects[gameVars.picked].color]);
+  wordList.push(zShapes[zObjects[gameVars.picked].type]);
+/*
+  for making sure each word is in the correct place:
+
+  for (var a of zWords) {
+    //wordList.push(a);
+  }
+  for (var a of zColors) {
+    wordList.push(a);
+  }
+  for (var a of zShapes) {
+    wordList.push(a);
+  }
+  for (var a of zNumbers) {
+    wordList.push(a);
+  }
+*/
+  soundPlay(wordList[wordList[0]]);
 
   gameRenderFore();
+
   randing = 0;
 }
 function userRight() {
   soundPlay(zWords[5].aBuffer);
   gameVars.gameForeText = 'Yes! That is the ' +
-  hsls[zObjects[gameVars.picked].color].text +
+  zColors[zObjects[gameVars.picked].color].text +
   ' ' +
   zShapes[zObjects[gameVars.picked].type].text +
   '.';
   gameVars.gameForeColor = 'green';
-  gameRenderFore();
 
-  //make it do a different set of shapes each tick.
-  window.setTimeout(function() {
-    createObjects();
-  }, 2000);
+  wordList.push('right');
+  wordList.push(zWords[6]);
+  wordList.push(zWords[1]);
+  wordList.push(zWords[2]);
+  wordList.push(zWords[4]);
+  wordList.push(zColors[zObjects[gameVars.picked].color]);
+  wordList.push(zShapes[zObjects[gameVars.picked].type]);
+  soundPlay(wordList[wordList[0]]);
+
+  gameRenderFore();
 }
 function userWrong(num) {
   soundPlay(zWords[3].aBuffer);
-  gameVars.gameForeText = 'That is a ' + 
-  hsls[zObjects[num].color].text +
+  gameVars.gameForeText = 'That is a ' +
+  zColors[zObjects[num].color].text +
   ' ' +
   zShapes[zObjects[num].type].text +
   '.';
   gameVars.gameForeColor = 'red';
-  gameRenderFore();
 
-  window.setTimeout(function() {
-    userAsk();
-  }, 2000);
+  wordList.push('wrong');
+  wordList.push(zWords[1]);
+  wordList.push(zWords[2]);
+  wordList.push(zWords[5]);
+  wordList.push(zColors[zObjects[num].color]);
+  wordList.push(zShapes[zObjects[num].type]);
+  soundPlay(wordList[wordList[0]]);
+
+  gameRenderFore();
 }
 
 function newGame() {
@@ -439,7 +477,7 @@ function gameRenderMain() {
   for (var x of zObjects) {
     var a = Math.floor(x.x * gameVars.scale);
     var b = Math.floor(x.y * gameVars.scale);
-    gameVars.gameMainCTX.fillStyle = hsls[x.color].text;
+    gameVars.gameMainCTX.fillStyle = zColors[x.color].text;
     gameVars.gameMainCTX.translate(a, b);
     if (x.type < 5) {
       gameVars.gameMainCTX.fill(zShapes[x.type].path);

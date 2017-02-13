@@ -302,13 +302,7 @@ function mouseUp(e) {
 function mouseWheel(e) {//for zooming in/out, changing speed, etc.
 }
 
-var zWordNum=0;
 function mouseClick() {
-  zWordNum++;
-  if (zWordNum > 5) {
-    zWordNum = 0;
-  }
-  soundPlay(zWords[zWordNum]);
   if (mouseVars.current.target.id === 'toastClose') {
     upNotClose();
   } else {

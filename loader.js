@@ -172,12 +172,17 @@ function upNotClose() {
 
 
 
-//now for the file loading portion of the loader file.
-fLoad('toddlearnerWave.wav','audio','','sounds','', 0);
+//Now for the file loading portion of the loader file.
+
 //loop through the required files, and load then now.
 for (var fileName of fileList) {
   fLoad(fileName + '.js', 'script', fileName, fileName + ' file', '', 0);
 }
+//In the spirit of Open Source, and to keep downloads minimal,
+//I've decided to ONLY support ogg. It is open source...
+//Why would a browser not support it?!?!?!?!
+fLoad('toddlearnerAudio.ogg','audio','','sounds','', 0);
+
 function fLoad(zSrc, zType, zId, zText, zLoad, WinNo) {
   //remove the dot and any slashes in the name, so that it can be used for the name of the progressbar
   var zFileName = zSrc.replace(/\./, '').replace(/\//, '');
@@ -212,42 +217,27 @@ function fLoad(zSrc, zType, zId, zText, zLoad, WinNo) {
     //create an onLoad event for when the server has sent the data through to the browser
     xhr.addEventListener('loadend', function() {
       if (loadingVars[zFileName].xhr) {
-        //Create an empty element of the type required (link=css, script=javascript, img=image)
-        var zElem = document.createElement(zType);
-        //if there is an ID for this script, add it to the new element
-        if (zId) {
-          zElem.id = zId;
-        }
-        if (zType === 'img') {
-          window.URL.revokeObjectURL(zElem.src);
-          //make sure there is no src
-          zElem.src = window.URL.createObjectURL(xhr.response);
-          //add the downloaded src to the element
-        } else if (zType === 'audio') {
+        if (zType === 'audio') {
           audioCtx.decodeAudioData(xhr.response).then(function(decodedData) {
-            //my hope is that I can use the audioSprite var for the
-            //decodedData, then use bits of the audioSprite for the
-            //actual soundBuffers.
-            //audioSprite = audioCtx.createBufferSource();
-            //audioSprite.buffer = decodedData;
-            //var gainNode = audioCtx.createGain();
-            //dunno if this is needed, as this file won't be played.
-            //audioSprite.connect(gainNode);
-            //gainNode.connect(audioCtx.destination);
-            //now that the audio is loaded and buffered, init the
-            //individual sounds from the soundsprite:
-
-            //instead of that, I want to just hold the decodedData
-            //in the audioSprite
             audioSprite = decodedData;
-
-
-            initSounds();
           });
         } else {
-          zElem.innerHTML = xhr.responseText;
+          //Create an empty element of the type required (link=css, script=javascript, img=image)
+          var zElem = document.createElement(zType);
+          //if there is an ID for this script, add it to the new element
+          if (zId) {
+            zElem.id = zId;
+          }
+          if (zType === 'img') {
+            window.URL.revokeObjectURL(zElem.src);
+            //make sure there is no src
+            zElem.src = window.URL.createObjectURL(xhr.response);
+            //add the downloaded src to the element
+          } else {
+            zElem.innerHTML = xhr.responseText;
+          }
+          document.head.appendChild(zElem);
         }
-        document.head.appendChild(zElem);
       }
     }, false);
     xhr.addEventListener('error', function() {
