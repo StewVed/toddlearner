@@ -7,7 +7,7 @@
 //vars for the game itself
 //put here so that I can check when the game has initialized
 var gameVars;
-var fileList = ['initialize', 'inputs', 'main', 'storage', 'texts']
+var fileList = ['initialize', 'inputs', 'main', 'sounds', 'storage', 'texts']
   , isLoaded = 0
   , isUpdated = 0
   , isOffline = 0
@@ -128,16 +128,17 @@ function upNotCheck(msg) {
   }
 }
 function upNotOpen(msg) {
+  var newWindow;
   if (document.getElementById('toastPopup')) {
     //change toastPopup from installed to updated.
-    document.getElementById('unp').innerHTML = msg;
+    newWindow = document.getElementById('unp');
   }
   else {
-    var newWindow = document.createElement('div');
+    newWindow = document.createElement('div');
     newWindow.id = 'toastPopup';
     document.body.appendChild(newWindow);
-    newWindow.innerHTML = '<div id="toastClose">X</div><p id="unp">' + msg + '<p/>';
   }
+  newWindow.innerHTML = '<div id="toastClose">X</div><p id="unp">' + msg + '<p/>';
   newWindow.classList.add('letScroll');
   upSetClass(newWindow);
 }
@@ -171,11 +172,17 @@ function upNotClose() {
 
 
 
-//now for the file loading portion of the loader file.
+//Now for the file loading portion of the loader file.
+
 //loop through the required files, and load then now.
 for (var fileName of fileList) {
   fLoad(fileName + '.js', 'script', fileName, fileName + ' file', '', 0);
 }
+//In the spirit of Open Source, and to keep downloads minimal,
+//I've decided to ONLY support ogg. It is open source...
+//Why would a browser not support it?!?!?!?!
+fLoad('toddlearnerAudio.ogg','audio','','sounds','', 0);
+
 function fLoad(zSrc, zType, zId, zText, zLoad, WinNo) {
   //remove the dot and any slashes in the name, so that it can be used for the name of the progressbar
   var zFileName = zSrc.replace(/\./, '').replace(/\//, '');
@@ -204,24 +211,33 @@ function fLoad(zSrc, zType, zId, zText, zLoad, WinNo) {
     if (zType === 'img') {
       xhr.responseType = 'blob';
     }
+    else if (zType === 'audio') {
+      xhr.responseType = 'arraybuffer';
+    }
     //create an onLoad event for when the server has sent the data through to the browser
     xhr.addEventListener('loadend', function() {
       if (loadingVars[zFileName].xhr) {
-        //Create an empty element of the type required (link=css, script=javascript, img=image)
-        var zElem = document.createElement(zType);
-        //if there is an ID for this script, add it to the new element
-        if (zId) {
-          zElem.id = zId;
-        }
-        if (zType === 'img') {
-          window.URL.revokeObjectURL(zElem.src);
-          //make sure there is no src
-          zElem.src = window.URL.createObjectURL(xhr.response);
-          //add the downloaded src to the element
+        if (zType === 'audio') {
+          audioCtx.decodeAudioData(xhr.response).then(function(decodedData) {
+            audioSprite = decodedData;
+          });
         } else {
-          zElem.innerHTML = xhr.responseText;
+          //Create an empty element of the type required (link=css, script=javascript, img=image)
+          var zElem = document.createElement(zType);
+          //if there is an ID for this script, add it to the new element
+          if (zId) {
+            zElem.id = zId;
+          }
+          if (zType === 'img') {
+            window.URL.revokeObjectURL(zElem.src);
+            //make sure there is no src
+            zElem.src = window.URL.createObjectURL(xhr.response);
+            //add the downloaded src to the element
+          } else {
+            zElem.innerHTML = xhr.responseText;
+          }
+          document.head.appendChild(zElem);
         }
-        document.head.appendChild(zElem);
       }
     }, false);
     xhr.addEventListener('error', function() {
@@ -243,16 +259,24 @@ function fLoad(zSrc, zType, zId, zText, zLoad, WinNo) {
   });
 }
 function fLoadSimple(fileName) {
-  var firstScript = document.getElementsByTagName('script')[0];
-  var zScript = document.createElement('script');
-  //zScript.type = 'text/javascript'; //needed in modern browsers?!Q?
-  zScript.id = fileName + 'l';
-  zScript.src = fileName + '.js';
-  zScript.addEventListener('load', function() {
-    this.id = this.id.slice(0, -1);
-    filesLoadedCheck();
-  });
-  firstScript.parentNode.insertBefore(zScript, firstScript);
+  if (fileName === 'toddlearnerWave') {
+    //don't bother trying to make a buffer from the wav through
+    //and audio element...or any other way - seems impossible.
+    //rely purely on fload through serviceworker/server.
+  }
+  else {
+    var firstScript = document.getElementsByTagName('script')[0];
+    var zScript = document.createElement('script');
+    //zScript.type = 'text/javascript'; //needed in modern browsers?!Q?
+    zScript.id = fileName + 'l';
+    zScript.src = fileName + '.js';
+    zScript.addEventListener('load', function() {
+      this.id = this.id.slice(0, -1);
+      filesLoadedCheck();
+    });
+    firstScript.parentNode.insertBefore(zScript, firstScript);
+  }
+
 }
 function fLoadProgressBar(zFileName, zText) {
   if (document.getElementById('loading')) {

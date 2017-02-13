@@ -4,7 +4,7 @@ var killFS = (document.exitFullscreen || document.mozCancelFullScreen || documen
 //kick up fullscreen:
 var getFS = (document.documentElement.requestFullscreen || document.documentElement.mozRequestFullScreen || document.documentElement.webkitRequestFullscreen || document.documentElement.msRequestFullscreen);
 //mousewheel event, based on the all-encompassing mozDev version
-var mouseWheelType = 'onwheel'in document.createElement('div') ? 'wheel' : document.onmousewheel ? 'mousewheel' : 'DOMMouseScroll';
+var mouseWheelType = 'onwheel' in document.createElement('div') ? 'wheel' : document.onmousewheel ? 'mousewheel' : 'DOMMouseScroll';
 /*
  * Keys to ignore... alt-tab is annoying, so don't bother with alt for example
  * 16 = shift
@@ -35,10 +35,17 @@ var gamepadReMap = [2,3,0,1];
 var keyVars = [];
 //For touch-enabled devices
 var touchVars = [];
-//global array to handle ongoing touch events
-// Create the main sound var
-var WinAudioCtx = new (window.AudioContext || window.webkitAudioContext);
-
+// Create the audio part of the game:
+//the main audio file will be put in here:
+var audioSprite;
+//I hate vendor prefixes! Why not just keep to the W3 specs?!?!?!
+window.AudioContext = window.AudioContext || window.webkitAudioContext;
+var audioCtx = new window.AudioContext();
+/*
+  the plan is to create loads of little audioBuffers from the sprite,
+  connecting them all to the AudioContext, then since they are all in
+  memory, they should be VERY fast for playback of eack sound.
+*/
 
 var nums = []
 , zSize
@@ -51,23 +58,47 @@ var nums = []
 , t = 600       //for how long something takes to animate... pause time.
 , saveY         //whether the user allows saving to HTML5 local storage
 
+, wordList
+
+, zWords = [
+    {text:'Which', aStart:0.246, aDuration:.584}
+  , {text:'That', aStart:1.083, aDuration:.564}
+  , {text:'is', aStart:1.948, aDuration:.470}
+  , {text:'are', aStart:2.626, aDuration:.540}
+  , {text:'the', aStart:3.495, aDuration:.434}
+  , {text:'a', aStart:4.181, aDuration:.492}
+  , {text:'Yes!', aStart:5.090, aDuration:.722}
+  , {text:'s', aStart:5.445, aDuration:.369} //the s of yes :D
+]
+, zNumbers = [
+    {text:'1', aStart:6.137, aDuration:.485}
+  , {text:'2', aStart:6.872, aDuration:.438}
+  , {text:'3', aStart:7.555, aDuration:.459}
+  , {text:'4', aStart:8.263, aDuration:.511}
+  , {text:'5', aStart:9.023, aDuration:.717}
+  , {text:'6', aStart:9.990, aDuration:.710}
+  , {text:'7', aStart:10.948, aDuration:.784}
+  , {text:'8', aStart:11.983, aDuration:.559}
+  , {text:'9', aStart:12.788, aDuration:.640}
+  , {text:'10', aStart:13.679, aDuration:.608}
+]
 //I think I will just do darker and lighter as 25% and 90% or somerthing.
 //eg. hslClrs[0][0] is 'red', hslClrs[2][2] is 48
-, hsls = [
-   {text:'red', h:0, l:50}
- , {text:'orange', h:31, l:50}
- , {text:'yellow', h:60, l:48}
- , {text:'green', h:120, l:45}
- , {text:'blue', h:220, l:50}
- , {text:'purple', h:270, l:50}
- , {text:'pink', h:320, l:50}
+, zColors = [
+   {text:'red', h:0, l:50, aStart:14.587, aDuration:.609}
+ , {text:'orange', h:31, l:50, aStart:15.441, aDuration:.628}
+ , {text:'yellow', h:60, l:48, aStart:16.316, aDuration:.378}
+ , {text:'green', h:120, l:45, aStart:16.941, aDuration:.505}
+ , {text:'blue', h:220, l:50, aStart:17.696, aDuration:.456}
+ , {text:'purple', h:270, l:50, aStart:18.398, aDuration:.633}
+ , {text:'pink', h:320, l:50, aStart:19.279, aDuration:.552}
  ]
 , zShapes = [
-    {text:'circle', path:null}
-  , {text:'triangle', path:null}
-  , {text:'square', path:null}
-  , {text:'star', path:null}
-  , {text:'heart', path:null}
+    {text:'circle', path:null, aStart:20.079, aDuration:.871}
+  , {text:'triangle', path:null, aStart:21.199, aDuration:.761}
+  , {text:'square', path:null, aStart:22.209, aDuration:.782}
+  , {text:'star', path:null, aStart:23.239, aDuration:.836}
+  , {text:'heart', path:null, aStart:24.318, aDuration:.772}
 ]
 , gameWindow    //vars to hold variables for the window
 //gameVars woz ere! Now in loader file so app knows when it can display a popup toast.
@@ -132,6 +163,7 @@ function Init() {
   //now that everything is set up, make a recurring checker for button presses:
   gamePadsButtonEventCheck();
   resize();
+  resetWordList();
   newGame();
 }
 function addEventListeners() {
