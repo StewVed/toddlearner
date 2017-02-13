@@ -6,16 +6,8 @@ var zAll = '<span class="B'
 
 var appCL =
   '<hr>' +
-  '<p class="B C">11th February 2017</p> ' +
-  '<ul><li>' + zDev + 'more audio development. Almost there now.' +
-  '</li></ul>' +
-  '<hr>' +
-  '<p class="B C">10th February 2017</p> ' +
-  '<ul><li>' + zDev + 'continue audio development...' +
-  '</li></ul>' +
-  '<hr>' +
-  '<p class="B C">9th February 2017</p> ' +
-  '<ul><li>' + zDev + 'Begin audio development!' +
+  '<p class="B C">13th February 2017</p> ' +
+  '<ul><li>' + zNew + 'Spoken words added. (ogg format)' +
   '</li></ul>' +
   '<hr>' +
   '<p class="B C">25th January 2017</p> ' +
