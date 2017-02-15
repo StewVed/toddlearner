@@ -13,15 +13,16 @@ function anEvent() {
   gameVars.go = 1;
 }
 function bubbleStop(e) {
-  try {
-    e.preventDefault();
-    e.stopPropagation();
-  } catch (ex) {
-    mouseClear();
-    touchVars = [];
-    //just blank the touches back to nothing.
-    touchDown = null;
-  }
+  //try {
+    if (e.cancelable) {
+      e.preventDefault();//stop browser doing it's default action.
+      e.stopPropagation(); //stop the event bubbling
+    }
+  //} catch (ex) {
+  //  mouseClear();
+  //  touchVars = [];
+  //  touchDown = null;
+  //}
   //this can fail on touch if scrolling is running on an element at the time...like the uLauncher
 }
 function findTarget(e) {
@@ -99,7 +100,7 @@ function keyNum(e) {
 function keyDown(e) {
   var theKey = keyNum(e);
   if (keysIgnore.indexOf(theKey) === -1) {
-    bubbleStop();
+    bubbleStop(e);
     if (isFinite(keysCurrent[theKey])) {
       //because there is a 0, I gotta check whether it is null/undefined.
       endUp(keysCurrent[theKey]);
@@ -113,7 +114,7 @@ function keyRedefine(theKey) {
   // left,up,right,down,A,B,X,Y   you can add more should your game require it.
   var theKey = keyNum(e);
   if (keysIgnore.indexOf(theKey) === -1) {
-    bubbleStop();
+    bubbleStop(e);
     //simply add the newly pressed key into the WinKeys array.
     keyVars.push(theKey);
   }
@@ -121,7 +122,7 @@ function keyRedefine(theKey) {
 function keyUp(e) {
   var theKey = keyNum(e);
   if (keysIgnore.indexOf(theKey) === -1) {
-    bubbleStop();
+    bubbleStop(e);
     while (keyVars.indexOf(theKey) != -1) {
       //updates array length while delete() doesn't
       keyVars.splice(keyVars.indexOf(theKey), 1);
@@ -300,6 +301,7 @@ function mouseUp(e) {
 }
 function mouseWheel(e) {//for zooming in/out, changing speed, etc.
 }
+
 function mouseClick() {
   if (mouseVars.current.target.id === 'toastClose') {
     upNotClose();
