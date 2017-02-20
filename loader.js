@@ -138,7 +138,7 @@ function upNotOpen(msg) {
     newWindow.id = 'toastPopup';
     document.body.appendChild(newWindow);
   }
-  newWindow.innerHTML = '<div id="toastClose">X</div><p id="unp">' + msg + '<p/>';
+  newWindow.innerHTML = '<div id="buttonClose">X</div><p id="unp">' + msg + '<p/>';
   newWindow.classList.add('letScroll');
   upSetClass(newWindow);
 }

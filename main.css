@@ -119,23 +119,23 @@ ul {
   padding-top: 1;
 }
 
-#set {
-  display: inline-block;
-  margin-left: 2%;
-  padding: 0% 2.5% 1% 2.5%;
-  line-height: 100%;
-  padding-top: 1.5%;
-  width: 20%;
+.settB {
+  position: absolute;
+  padding: 1% 2.2% 1% 2.2%;
+  line-height: 125%;
+  border-bottom: 1px solid black;
+  border-right: 1px solid black;
+  font-size: 125%;
 }
 
-#settns {
+#settW {
   position: absolute;
   top: 0;
-  left: 0;
+  left: -90%;
   height: 100%;
-  width: 100%;
+  width: 90%;
   background-color: hsla(0, 0%, 100%, .95);
-  visibility: hidden;
+  transition: .7s;
 }
 
 .vImg {
@@ -214,7 +214,7 @@ ul {
   100% {top: 80%;}
 }
 
-#toastClose {
+#buttonClose {
   position: absolute;
   left: calc(100% - 32px);
   font-weight: bold;

@@ -305,6 +305,10 @@ function mouseWheel(e) {//for zooming in/out, changing speed, etc.
 function mouseClick() {
   if (mouseVars.current.target.id === 'toastClose') {
     upNotClose();
+  } else if (mouseVars.current.target.id === 'sets') {
+    settingsCreate();
+  } else if (mouseVars.current.target.id === 'setsClose') {
+    settingsClose1();
   } else {
     if (!randing) {
       randing = 1;

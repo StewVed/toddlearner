@@ -150,6 +150,7 @@ function Init() {
     globVol = parseFloat(dataToLoad);
   }
 
+  settingsButton();
   //make a link to the game areas in memory for quicker access:
   gameVars.gameBack = document.getElementById('gameBack');
   gameVars.gameMain = document.getElementById('gameMain');
