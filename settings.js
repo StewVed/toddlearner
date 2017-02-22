@@ -33,29 +33,31 @@ function settingsButton() {
 }
 
 function settingsCreate() {
-
-  var zVol = (globVol*100).toFixed(0);
   //create a semi-opaque rounded rectangle on the top-right, and put the message into it.
   var newElem = document.createElement('div');
   newElem.id = 'settns';
   newElem.classList = 'settW';
 
-  newElem.innerHTML = 
+  newElem.innerHTML =
     //close button
-    '<div id="setsClose" class="uButtonRed buttonClose">X</div>' +
+    '<div id="setsClose" class="buttonClose">X</div>' +
     //fullscreen toggle button
     '<div id="fs" class="uButtons uButtonGrey fsButton">' + 
       '<span id="fsI" class="fsInner">&#9974;</span> Fullscreen' + 
     '</div>' +
+    '<br>' +
     //volume control
-    '<div class="vImg">&#9698;</div>' + '<div id="vol%" style="display:inline-block;left:' + zVol + '%;">' + zVol + '%</div>' + 
+    //'<div class="vImg">&#9698;</div>' + '<div id="vol%" style="display:inline-block;left:' + zVol + '%;">' + zVol + '%</div>' + 
     '<div id="vol-Cv" class="sliderCont">&nbsp;' + 
-      '<div id="vol-Iv" class="sliderInner">&nbsp;</div>' + //Off ♫ &#128266;
+      '<div id="vol-Iv" class="sliderInner"><div id="vol-T" class="vImg">&#9698;</div></div>' + //Off ♫ &#128266;
     '</div>';
   document.body.appendChild(newElem);
   //in the CSS, the left is set to -90% and width 90%
   //so now we move it onto the screen from the left.
-  newElem.style.left = 0;
+  window.setTimeout(function(){
+    document.getElementById('settns').style.left = 0;
+    volUpdate();
+  },25);
 }
 
 function settingsClose1() {

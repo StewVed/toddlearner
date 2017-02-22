@@ -1,9 +1,18 @@
 function soundPlay(a) {
   if (a) {
     var newSound = audioCtx.createBufferSource();
+    var newGain = audioCtx.createGain();
+    //specify the sound buffer to use
     newSound.buffer = audioSprite;
-    newSound.connect(audioCtx.destination);
+    //connect the volume to the audiobuffer
+    newSound.connect(newGain);
+    //connect the gain to the destination
+    newGain.connect(audioCtx.destination);
+    //set the (gain) volume of the sound
+    newGain.gain.value = soundVol(1);
+    //add event when the audio finishes
     newSound.addEventListener('ended', function(){soundEnded(this)})
+    //play the sound, specifying when to start and how long to play for
     newSound.start(0, a.aStart, a.aDuration);//  - audioCtx.currentTime
   }
 }
@@ -52,9 +61,7 @@ function soundEnded(zElem) {
 
 // example: soundBeep('sine', 500, 1, 100);setTimeout(function(){soundBeep('sine', 750, 1, 100)}, 100);
 function soundBeep(type, frequency, volume, duration) {
-  //make the volume comform to the globally set volume
-  volume *= globVol;
-  volume *= .5;
+
   //make the entire game queiter.
   //create a HTML5 audio occilator thingy
   var zOscillator = audioCtx.createOscillator();
@@ -67,7 +74,7 @@ function soundBeep(type, frequency, volume, duration) {
   zOscillator.type = type;
   //default = 'sine' — other values are 'square', 'sawtooth', 'triangle' and 'custom'
   zOscillator.frequency.value = frequency;
-  zGain.gain.value = volume;
+  zGain.gain.value = soundVol(volume);
   //start the audio beep, and set a timeout to stop it:
   //zOscillator.start();
   // Wander whether I could to the newer start like above?
@@ -82,4 +89,8 @@ function soundBeep(type, frequency, volume, duration) {
   }, duration);
   */
   //default to qurter of a second for the beep if no time is specified
+}
+function soundVol(num) {
+  num *= globVol;  //make the volume comform to the globally set volume
+  return (num * .5);  //make it half loud again.
 }

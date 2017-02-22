@@ -172,6 +172,10 @@ function mouseDown(e) {
   mouseVars.start.time = new Date().getTime();
   mouseVars.start.x = e.clientX;
   mouseVars.start.y = e.clientY;
+  //look for volume control slider
+  if (targ.id.slice(0, 3) === 'vol') {
+    volDown();
+  }
   anEvent();
 }
 function mouseMove(e) {
@@ -308,13 +312,21 @@ function mouseClick() {
   } else if (mouseVars.current.target.id === 'sets') {
     settingsCreate();
   } else if (mouseVars.current.target.id === 'setsClose') {
-    settingsClose1();
+    settingsClose1();  
+  } else if (mouseVars.current.target.id.slice(0, 3) === 'vol') {
+    volDown();
+  } else if (targ.id.slice(0, 4) === 'stor') { //storage question.
+    storageChoose(targ.id.slice(-1));
+    upNotClose();
+  } else if (targ.id === 'fsI' || targ.id === 'fs') {//fullscreen button
+    fullScreenToggle();
   } else {
     if (!randing) {
       randing = 1;
       endUp();
     }
-  }
+  }  //look for volume control slider
+
 }
 function mouseLongClick() {//this is also the right-click.
 //for right click, and long taps.
@@ -398,7 +410,12 @@ function volMove() {
     sliderPercent = 100;
   }
   globVol = (sliderPercent / 100);
-  document.getElementById('vol%').innerHTML = Math.round(sliderPercent) + '%';
+  //document.getElementById('vol%').innerHTML = Math.round(sliderPercent) + '%';
+  //change the color of the slider ball to where the ball is
+  var zNum = Math.round((240/100) * (100-sliderPercent));
+  var zBack = 'radial-gradient(farthest-side at 33% 33% , hsl(' + zNum + 
+  ',100%,90%), hsl(' + zNum + ',100%,40%))';
+  mouseVars.start.target.style.background = zBack;
   //recalculate to offset width of the slider iteself
   var zDiff = (zWidth - mouseVars.start.target.offsetWidth) / zWidth;
   sliderPercent *= zDiff;
@@ -406,11 +423,17 @@ function volMove() {
 }
 function volUpdate() {
   var sliderPercent = (globVol * 100);
-  document.getElementById('vol%').innerHTML = Math.round(sliderPercent) + '%';
   //recalculate to offset width of the slider iteself
   var zDiff = (document.getElementById('vol-Cv').offsetWidth - document.getElementById('vol-Iv').offsetWidth) / document.getElementById('vol-Cv').offsetWidth;
   sliderPercent *= zDiff;
   document.getElementById('vol-Iv').style.left = sliderPercent + '%';
+  //now change the color of the slider
+  var zVol = (globVol*100).toFixed(0);  
+  var zNum = Math.round((240/100) * (100 - (globVol*100)));
+  var zBack = 'radial-gradient(farthest-side at 33% 33% , hsl(' + zNum + 
+  ',100%,90%), hsl(' + zNum + ',100%,40%))';
+
+  document.getElementById('vol-Iv').style.background = zBack;
 }
 function divScroller(targ, zSpeed, zTime) {
   if (!targ || mouseVars.button) {
@@ -457,8 +480,9 @@ function divScroller(targ, zSpeed, zTime) {
 function scroller(targ, toScrollBy) {
   //console.log(toScrollBy);
   var zTop = (targ.offsetTop + toScrollBy);
-  var longest = document.body.offsetHeight - targ.offsetHeight;
-  var smallest = document.body.offsetHeight - document.getElementById('unp').offsetHeight;
+  var longest = document.body.offsetHeight - targ.clientHeight;//don't include border on targ.
+  var smallest = document.body.offsetHeight - 
+  (document.getElementById('unp').offsetHeight + document.getElementById('unp').offsetTop);
   if (longest > zTop) {
     zTop = longest;
   }

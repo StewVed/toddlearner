@@ -37,9 +37,9 @@ ul {
   padding: 1px 12px;
   color: black;
   border: solid black;
-  border-width: calc(1%);
-  font-size: 75%;
-  border-radius: 64px;
+  border-width: .1em;
+  font-size: .75em;
+  border-radius: 5em;
 }
 
 .uButtonsDisabled {
@@ -108,40 +108,62 @@ ul {
 
 .fsButton {
   display: inline-block;
+  font-size: 1.3em;
 }
 
 .fsInner {
-  transform: scale(1.3,0.9);
+  transform: scale(1.5, 1);
   font-weight: bolder;
   display: inline-block;
-  padding-top: 4px;
-  line-height: 80%;
-  padding-top: 1;
+  padding-top: .1em;
+  line-height: .7em;
+}
+.sliderCont {
+  background: linear-gradient(90deg, hsl(240,100%,50%),hsl(120,100%,50%), hsl(0,100%,50%));
+  border: .1em solid black;
+  border-radius: 5em;
+  clear: both;
+  position: relative;
+  margin: 0.6em .2em;
+}
+
+.sliderInner {
+  position: absolute;
+  border-radius: 5em;
+  border: .1em solid black;
+  top: -0.5em;
+  left: 28.4%;
+  width: 2em;
+  height: 2em;
 }
 
 .settB {
   position: absolute;
-  padding: 1% 2.2% 1% 2.2%;
+  padding: .2em .5em .2em .4em;
   line-height: 125%;
-  border-bottom: 1px solid black;
-  border-right: 1px solid black;
+  border-bottom: 2px solid hsl(210, 100%, 50%);
+  border-right: 2px solid hsl(210, 100%, 50%);
   font-size: 125%;
 }
 
-#settW {
+.settW {
   position: absolute;
   top: 0;
   left: -90%;
   height: 100%;
   width: 90%;
   background-color: hsla(0, 0%, 100%, .95);
-  transition: .7s;
+  border-right: 4px solid hsl(210, 100%, 50%);
+  transition: left .7s;
+  text-align: center;
+  font-size: 1.5em;
 }
 
 .vImg {
-  display: inline-block;
-  margin-right: 8%;
-  transform: scaleX(2);
+  margin-right: 0.2em;
+  transform: scaleX(2.5);
+  font-size: 0.8em;
+  line-height: 2.3em;
 }
 
 #noty {
@@ -201,12 +223,14 @@ ul {
 }
 
 #toastPopup {
+  box-sizing: border-box;
   position: absolute;
   top: 80%;
   width: 100%;
   border-top: 4px solid hsl(210, 100%, 50%);
   animation: popupBouncer .6s ease-in-out;
   background-color: hsla(0, 0%, 100%, .95);
+  background: hsl(0, 0%, 100%);
 }
 @keyframes popupBouncer {
   0% {top: 100%;}
@@ -214,16 +238,19 @@ ul {
   100% {top: 80%;}
 }
 
-#buttonClose {
-  position: absolute;
-  left: calc(100% - 32px);
+.buttonClose {
   font-weight: bold;
-  padding: 3px 8px;
-  line-height: 100%;
+  padding: .05em 0.3em;
   font-size: 1.5em;
+  float: right;
 }
 #unp {
-  padding: 2% 10%;
+  padding: 0em 1em 1.5em 1em;
   text-align: center;
   font-weight: bold;
+  box-sizing: border-box;
+  overflow: hidden;
+  margin: 0;
+  position: relative;
+  width: 100%;
 }
