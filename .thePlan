@@ -1,36 +1,21 @@
+create universal settings hamburger and sidebar thingy.
+(modular as usual in it's own js file.)
 
-add Speech:
-  Words:
-    which
-    That
-    is
-    are
-    the
-    a
-    Yes! (maybe use the s of the yes for the multi??)
-    s (add an 's' on the end of the object's word for more than one.)
-  Colors:
-    Red
-    Orange
-    Yellow
-    Green
-    Blue
-    Purple
-    Pink
-  Shapes:
-    Circle
-    Triangle
-    Square
-    Heart
-    Star
-  Numbers:
-    1 to 10
 
-I think I'll so a single sound file, then have each word
-a specific start and duration time.
-so, var zWords = [
-     {text:'red', start:45, end:83}
-  ,  {text:'orange', start:90, end:120}
-]
-assuming that the sounds are in milliseconds, and all
-browsers do the same!!!!!!!
+give the popup toaster a containing div that is the height of the
+message - animate the bounce to something like -10%
+
+
+Animate the words in time with the audio spoken words.
+  could make the word bigger, bounce up a bit, change color, etc.
+
+
+Loader:
+  make a single loading bar:
+    each file represents a portion of the entire bar,
+    with it's progress being a percent of the overall portion
+    of that file.
+    example:
+    10 files, means 1 file is a 10th of the entire bar when loaded.
+    if that file was 50% loaded, it would be 50 diveded by 10 for the 
+    actual progress bar.

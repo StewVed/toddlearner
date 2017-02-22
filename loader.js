@@ -7,7 +7,7 @@
 //vars for the game itself
 //put here so that I can check when the game has initialized
 var gameVars;
-var fileList = ['initialize', 'inputs', 'main', 'sounds', 'storage', 'texts']
+var fileList = ['initialize', 'inputs', 'main', 'settings', 'sounds', 'storage', 'texts']
   , isLoaded = 0
   , isUpdated = 0
   , isOffline = 0
@@ -138,7 +138,9 @@ function upNotOpen(msg) {
     newWindow.id = 'toastPopup';
     document.body.appendChild(newWindow);
   }
-  newWindow.innerHTML = '<div id="toastClose">X</div><p id="unp">' + msg + '<p/>';
+  newWindow.innerHTML = '<div id="toastClose" class="buttonClose">X</div>' +
+  '<div id="unp">' + msg + '</div>';
+  
   newWindow.classList.add('letScroll');
   upSetClass(newWindow);
 }

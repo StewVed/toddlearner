@@ -7,17 +7,23 @@ var zAll = '<span class="B'
 var appCL =
   '<hr>' +
   '<p class="B C">13th February 2017</p> ' +
+  '<ul><li>' + zNew + 'Settings <q>hamburger</q> which slides a settings window from the left.' +
+  '</li><li>' + zImp + 'Colorized the volume control.' +
+  '</li><li>' + zImp + 'asking permission to save preferences now comes up in the <q>toast</q> popup from the bottom.' +
+  '</li></ul>' +
+  '<hr>' +
+  '<p class="B C">13th February 2017</p> ' +
   '<ul><li>' + zNew + 'Spoken words added. (ogg format)' +
   '</li></ul>' +
   '<hr>' +
   '<p class="B C">25th January 2017</p> ' +
   '<ul><li>' + zBug + 'Sometimes could not press an object (typo).' +
-  '</li><li>' + zDev + 'comment out toast popup test.' +
+  '</li><li>' + zDev + 'comment out <q>toast</q> popup test.' +
   '</li><li>' + zImp + 'Put some color in to this change log.' +
   '</li></ul>' +
   '<hr>' +
   '<p class="B C">24th January 2017</p> ' +
-  '<ul><li>' + zNew + 'Swipe-up changelog added under toast popup on update.' +
+  '<ul><li>' + zNew + 'Swipe-up changelog added under <q>toast</q> popup on update.' +
   '</li></ul>' +
   '<hr>' +
   '<p class="B C">21st January 2017</p> ' +

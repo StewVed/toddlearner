@@ -1,22 +1,23 @@
-var zAppCache = 'toddlearner-2017-2-13';
+var zAppCache = 'toddlearner-2017-2-22';
 self.addEventListener('install', function(event) {
   event.waitUntil(caches.open(zAppCache).then(function(cache) {
     return cache.addAll([
         './'
+      , './appmanifest'
       , './initialize.js'
       , './inputs.js'
       , './loader.js'
       , './main.css'
       , './main.js'
+      , './settings.js'
       , './sounds.js'
       , './storage.js'
       , './texts.js'
       , './toddlearnerAudio.ogg'
-
     /*
       Do not include:
       index.html
-      Application Manifest file (appmanifest)
+      (chrome 56.0.2924.87 (64-bit) asks for appmanifest now!) Application Manifest file (appmanifest)
       any favicons
       Service Worker file (sw.js)
     */

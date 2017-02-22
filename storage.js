@@ -18,7 +18,7 @@ function storageCheck() {
       saveY = 0;
     }
   } else {
-    notifyShow('localStorage appears to be unavailable in this browser. Unable to save anything.');
+    upNotOpen('localStorage appears to be unavailable in this browser. Unable to save anything.');
     saveY = -1;
   }
 }
@@ -34,6 +34,7 @@ function storageChoose(zChoice) {
     saveY = -1;
   }
   //later on if it is called for by anyone, I can add a 'never' save that disables saving, except for saving the preference to never save :D
+  upNotClose();
 }
 function storageLoad(toLoad) {
   var dataToLoad = '';
@@ -51,29 +52,10 @@ function storageSave(toSave, dataToSave) {
     //nothing stored
     //check if the user has already got a notifyer yet:
     if (!document.getElementById('storY')) {
-      saveY = [toSave, dataToSave];
       //temporerily store the data in this variable.
-      var message = '<p>Remember preferences?</p><button id="storY" class="uButtons uButtonGreen" type="button " style="font-size:1.5em;width:30%;margin:4px;float:left;">Yes</button>' + '<button id="storN" class="uButtons uButtonRed" type="button" style="font-size:1.5em;width:30%;margin:4px;float:right;">No</button>';
-      notifyShow(message);
+      saveY = [toSave, dataToSave];
+      upNotOpen('Remember preferences?<button id="storY" class="uButtons uButtonGreen" type="button " style="font-size:1.5em;width:30%;margin:.1em .2em;float:left;">Yes</button>' + '<button id="storN" class="uButtons uButtonRed" type="button" style="font-size:1.5em;width:30%;margin:.1em .2em;float:right;">No</button>');
     }
   }
-  //else stor is -1 and that means the user has opted to not save anything.
-}
-function notifyShow(message) {
-  if (message) {
-    //create a semi-opaque rounded rectangle on the top-right, and put the message into it.
-    var newWindow = document.createElement('div');
-    newWindow.id = 'noty';
-    var xButton = '<div id="notyClose" class="uButtonRed">X</div>';
-    //look for buttons etc and add the notifier's id nunmber to it
-    message = message.replace(/ id="_/gi, ' id="_');
-    //case insensetive and global
-    newWindow.innerHTML = xButton + message;
-    document.getElementById('cont').appendChild(newWindow);
-    //next, place the menu.
-    var noty = document.getElementById('noty');
-    //center the notify popup
-    noty.style.top = Math.round((document.getElementById('cont').offsetHeight - noty.offsetHeight) / 2) + 'px';
-    newWindow.style.opacity = 1;
-  }
+  //else stor is -1 and that means the user has opted to not save anything. 
 }

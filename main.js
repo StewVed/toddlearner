@@ -22,6 +22,8 @@ function resize() {
     portraitLayout = 1;
   }
 
+  //document.body.style.fontSize = a * .5 + '%';
+
   var gWidth = document.body.offsetWidth;
   var gHeight = (gWidth / (16 / 9));
   if (gHeight > document.body.offsetHeight) {
