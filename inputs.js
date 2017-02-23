@@ -304,21 +304,63 @@ function mouseUp(e) {
   anEvent();
 }
 function mouseWheel(e) {//for zooming in/out, changing speed, etc.
+  var targ = findTarget(e);
+  if (targ.id.slice(0, 4) === 'game') {
+    gameVars.gameObjectLast = gameVars.gameObject;
+    gameVars.gameObject = findObject(e);
+  }
+
+  bubbleStop(e);
+
+  var delta;
+  if (e.deltaY) {
+    delta = -e.deltaY;
+    //seems like the main one
+  } else if ('wheelDelta'in e) {
+    delta = e.wheelDelta;
+  } else {
+    delta = -40 * e.detail;
+    //fallback!
+  }
+  if (delta > 0) {
+    delta = 1;
+  } else {
+    delta = -1;
+  }
+  mouseWheelEvents(targ, delta);
+}
+function mouseWheelEvents(targ, d) {
+  if (targ.classList.contains('letScroll')) {
+    //very dodgy hard-code - only one thing can be scrolled.
+    targ = document.getElementById('toastPopup');
+    var zSpeed;
+    if (d < 0) {
+      zSpeed = -1000;
+    } else {
+      zSpeed = 1000;
+    }
+    divScroller(targ, zSpeed, new Date().getTime());
+  }
 }
 
 function mouseClick() {
-  if (mouseVars.current.target.id === 'toastClose') {
+  var targID = mouseVars.current.target.id;
+  if (targID === 'toastClose') {
     upNotClose();
-  } else if (mouseVars.current.target.id === 'sets') {
+  } else if (targID === 'sets') {
     settingsCreate();
-  } else if (mouseVars.current.target.id === 'setsClose') {
-    settingsClose1();  
-  } else if (mouseVars.current.target.id.slice(0, 3) === 'vol') {
+  } else if (targID === 'setsClose') {
+    settingsClose1();
+  } else if (targID === 'bAbout') {
+    upNotOpen('About the Developer', appAbout);
+  } else if (targID === 'bChange') {
+    upNotOpen('Todlearner ChangeLog', appCL);
+  } else if (targID.slice(0, 3) === 'vol') {
     volDown();
-  } else if (targ.id.slice(0, 4) === 'stor') { //storage question.
-    storageChoose(targ.id.slice(-1));
+  } else if (targID.slice(0, 4) === 'stor') { //storage question.
+    storageChoose(targID.slice(-1));
     upNotClose();
-  } else if (targ.id === 'fsI' || targ.id === 'fs') {//fullscreen button
+  } else if (targID === 'fsI' || targID === 'fs') {//fullscreen button
     fullScreenToggle();
   } else {
     if (!randing) {
@@ -431,9 +473,31 @@ function volUpdate() {
   var zVol = (globVol*100).toFixed(0);  
   var zNum = Math.round((240/100) * (100 - (globVol*100)));
   var zBack = 'radial-gradient(farthest-side at 33% 33% , hsl(' + zNum + 
-  ',100%,90%), hsl(' + zNum + ',100%,40%))';
+  ',100%,90%), hsl(' + zNum + ',100%,55%), hsl(' + zNum + ',100%,33%))';
 
   document.getElementById('vol-Iv').style.background = zBack;
+}
+function scroller(targ, toScrollBy) {
+  //console.log(toScrollBy);
+  var zTop = (targ.offsetTop + toScrollBy);
+  var tcTop = document.getElementById('toastContainer').offsetTop;
+  var longest = document.body.offsetHeight - (targ.clientHeight + tcTop);//don't include border on targ.
+
+  //debugger;
+  if (longest > zTop) {
+    zTop = longest;
+  }
+  else if (zTop > 0) {
+    zTop = 0;
+  }
+  targ.style.top = zTop + 'px';
+  //if there is a close button, make sure it stays on-screen.
+  if (document.getElementById('toastClose')) {
+    //might be the scroll value perhaps... dunno yet.
+    if (zTop < -tcTop) {
+      document.getElementById('toastClose').style.top = (-zTop - tcTop) + 'px';
+    }
+  }
 }
 function divScroller(targ, zSpeed, zTime) {
   if (!targ || mouseVars.button) {
@@ -477,26 +541,3 @@ function divScroller(targ, zSpeed, zTime) {
   }
 }
 
-function scroller(targ, toScrollBy) {
-  //console.log(toScrollBy);
-  var zTop = (targ.offsetTop + toScrollBy);
-  var longest = document.body.offsetHeight - targ.clientHeight;//don't include border on targ.
-  var smallest = document.body.offsetHeight - 
-  (document.getElementById('unp').offsetHeight + document.getElementById('unp').offsetTop);
-  if (longest > zTop) {
-    zTop = longest;
-  }
-  else if (zTop > smallest) {
-    zTop = smallest;
-  }
-  targ.style.top = zTop + 'px';
-
-  //if there is a close button, make sure it stays on-screen.
-  if (document.getElementById('toastClose')) {
-    //might be the scroll value perhaps... dunno yet.
-    if (targ.offsetTop < 0) {
-      document.getElementById('toastClose').style.top = 
-      (-targ.offsetTop + targ.scrollTop + 3) + 'px';
-    }
-  }
-}

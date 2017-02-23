@@ -7,6 +7,7 @@ body {
 }
 ul {
   font-size: .8em;
+  padding-left: 1em;
 }
 .B {
   font-weight:bold;
@@ -33,13 +34,13 @@ ul {
 
 .uButtons {
   text-align: center;
-  margin: 0;
+  margin: 0 .2em;
   padding: 1px 12px;
   color: black;
-  border: solid black;
-  border-width: .1em;
   font-size: .75em;
+  border: .1em solid black;
   border-radius: 5em;
+  display: inline-block;
 }
 
 .uButtonsDisabled {
@@ -106,11 +107,6 @@ ul {
   border-left: 0;
 }
 
-.fsButton {
-  display: inline-block;
-  font-size: 1.3em;
-}
-
 .fsInner {
   transform: scale(1.5, 1);
   font-weight: bolder;
@@ -118,25 +114,6 @@ ul {
   padding-top: .1em;
   line-height: .7em;
 }
-.sliderCont {
-  background: linear-gradient(90deg, hsl(240,100%,50%),hsl(120,100%,50%), hsl(0,100%,50%));
-  border: .1em solid black;
-  border-radius: 5em;
-  clear: both;
-  position: relative;
-  margin: 0.6em .2em;
-}
-
-.sliderInner {
-  position: absolute;
-  border-radius: 5em;
-  border: .1em solid black;
-  top: -0.5em;
-  left: 28.4%;
-  width: 2em;
-  height: 2em;
-}
-
 .settB {
   position: absolute;
   padding: .2em .5em .2em .4em;
@@ -154,9 +131,29 @@ ul {
   width: 90%;
   background-color: hsla(0, 0%, 100%, .95);
   border-right: 4px solid hsl(210, 100%, 50%);
-  transition: left .7s;
+  transition: left .5s;
   text-align: center;
-  font-size: 1.5em;
+  padding: 1.5em .8em;
+  box-sizing: border-box;
+}
+
+.volCont {
+  background: linear-gradient(90deg, hsl(240,100%,50%), hsl(180,100%,50%), hsl(120,100%,50%), hsl(60,100%,50%), hsl(0,100%,50%));
+  border: .1em solid black;
+  border-radius: 5em;
+  clear: both;
+  position: relative;
+  margin: 0.6em .2em;
+}
+
+.volInner {
+  position: absolute;
+  border-radius: 5em;
+  border: .1em solid black;
+  top: -0.5em;
+  left: 28.4%;
+  width: 2em;
+  height: 2em;
 }
 
 .vImg {
@@ -221,36 +218,43 @@ ul {
   from {left: 0%;}
   to {left: 75%;}
 }
-
+#toastContainer{
+  position: absolute;
+  width: 100%;
+  box-sizing: border-box;
+}
 #toastPopup {
   box-sizing: border-box;
   position: absolute;
-  top: 80%;
+  padding: 1.5em;
   width: 100%;
+  top:0px;
   border-top: 4px solid hsl(210, 100%, 50%);
-  animation: popupBouncer .6s ease-in-out;
+  animation: popupBouncer .5s ease-in-out;
   background-color: hsla(0, 0%, 100%, .95);
   background: hsl(0, 0%, 100%);
 }
 @keyframes popupBouncer {
   0% {top: 100%;}
-  60% {top: 75%;}
-  100% {top: 80%;}
+  60% {top: -25%;}
+  100% {top: 0%;}
 }
 
 .buttonClose {
   font-weight: bold;
   padding: .05em 0.3em;
   font-size: 1.5em;
-  float: right;
+  position: absolute;
+  top: 0px;
 }
 #unp {
-  padding: 0em 1em 1.5em 1em;
   text-align: center;
   font-weight: bold;
   box-sizing: border-box;
   overflow: hidden;
-  margin: 0;
   position: relative;
   width: 100%;
+  padding-bottom: 1.2em;
+  border-bottom: .2em solid black;
+  box-sizing: border-box;
 }

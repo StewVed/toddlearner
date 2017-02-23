@@ -5,8 +5,15 @@ var zAll = '<span class="B'
   , zDev = zAll + ' Or">Development: </span>'
 
 var appCL =
+  '<p class="B C">23rd February 2017</p> ' +
+  '<ul><li>' + zImp + 'More colors shown on the volume control.' +
+  '</li><li>' + zImp + 'More accurate <q>toast</q> popup animation.' +
+  '</li><li>' + zImp + '<q>Toast</q> popup can now be scrolled with a mouse scroll-wheel. Could only drag up/down before.' +
+  '</li><li>' + zNew + 'About and ChangeLog buttons added to Settings.' +
+  '</li><li>' + zDev + 'Added F12 to key ignore list for easy opening of development tools.' +
+  '</li></ul>' +
   '<hr>' +
-  '<p class="B C">13th February 2017</p> ' +
+  '<p class="B C">22nd February 2017</p> ' +
   '<ul><li>' + zNew + 'Settings <q>hamburger</q> which slides a settings window from the left.' +
   '</li><li>' + zImp + 'Colorized the volume control.' +
   '</li><li>' + zImp + 'asking permission to save preferences now comes up in the <q>toast</q> popup from the bottom.' +
@@ -33,78 +40,12 @@ var appCL =
   '<p class="B C">19th January 2017</p> ' +
   '<ul><li>' + zDev + 'more work on the ServiceWorker.' +
   '</li></ul>' +
-
-  '<hr>' +
-  '<br>' +
-  '<br>' +
-  '<br>' +
-  '<br>' +
-  '<br>' +
-  '<p class="C"><span class="B">Scroll: </span>test Scroller.</p>' +
-  '<br>' +
-  '<br>' +
-  '<br>' +
-  '<br>' +
-  '<br>' +
-  
-  '<hr>' +
-  '<br>' +
-  '<br>' +
-  '<br>' +
-  '<br>' +
-  '<br>' +
-  '<p class="C"><span class="B">Scroll: </span>test Scroller.</p>' +
-  '<br>' +
-  '<br>' +
-  '<br>' +
-  '<br>' +
-  '<br>' +
-  
-  '<hr>' +
-  '<br>' +
-  '<br>' +
-  '<br>' +
-  '<br>' +
-  '<br>' +
-  '<p class="C"><span class="B">Scroll: </span>test Scroller.</p>' +
-  '<br>' +
-  '<br>' +
-  '<br>' +
-  '<br>' +
-  '<br>' +
-  
-  '<hr>' +
-  '<br>' +
-  '<br>' +
-  '<br>' +
-  '<br>' +
-  '<br>' +
-  '<p class="C"><span class="B">Scroll: </span>test Scroller.</p>' +
-  '<br>' +
-  '<br>' +
-  '<br>' +
-  '<br>' +
-  '<br>' +
-  
-  '<hr>' +
-  '<br>' +
-  '<br>' +
-  '<br>' +
-  '<br>' +
-  '<br>' +
-  '<p class="C"><span class="B">Scroll: </span>test Scroller.</p>' +
-  '<br>' +
-  '<br>' +
-  '<br>' +
-  '<br>' +
-  '<br>' +
-  '<hr>' +
   '<hr>';
 
 
 var appBugs =
-  '<h1 style=text-align:center;margin-bottom:0;font-size:1.75em>StewVed\'s standard notice:</h1>' +
-  '<p style=text-align:center;font-size:1.5em;color:red;margin-top:0>' +
+  '<h1 style=text-align:center;margin-bottom:0;font-size:1.25em>StewVed\'s standard notice:</h1>' +
+  '<p style=text-align:center;color:red;margin-top:0;line-height:1.5em;>' +
     'Warning: May contain Bugs!<br>' +
     'Cannot guarantee Bug free!<br>' +
     'Produced on a system where Buggy products are also made!' +
@@ -112,8 +53,7 @@ var appBugs =
 
 var appAbout =
   '<img alt="The Author" src=images/StewVed.jpg style=float:left;' +
-  'border-radius:6px;width:15%;margin-right:8px;margin-bottom:8px>' +
-  '<h1>About the creator/Devloper of StewVed\'s Webtop:</h1>' +
+  'border-radius:0.7em;width:33%;margin-top:0.8em;margin-right:.1em;margin-bottom:.1em;>' +
   '<p>' +
     'Stewart Robinson (StewVed) was born in the United Kingdom, in the' +
     ' late 1970\'s.' +
@@ -128,5 +68,3 @@ var appAbout =
   '</p>' +
   '<br style=clear:both>' +
   '<hr>' + appBugs;
-
-

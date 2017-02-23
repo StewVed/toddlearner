@@ -65,6 +65,13 @@ function resize() {
   anEvent();
   gameVars.go = 1;
   gameRenderFore();
+
+  if (document.getElementById('toastClose')) {
+    closeButtonRight('toastClose');
+  }
+  if (document.getElementById('setsClose')) {
+    closeButtonRight('setsClose');
+  }
 }
 function resizeCenter(a, b) {
   return Math.round((a / 2) - (b / 2)) + 'px';

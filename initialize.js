@@ -13,8 +13,9 @@ var mouseWheelType = 'onwheel' in document.createElement('div') ? 'wheel' : docu
  * 91 = windows key
  * 116 = F5 - browser refresh
  * 122 = F11 - Full Screen Toggle
+ * 123 = F12 - Dev tools.
 */
-var keysIgnore = [0, 16, 17, 18, 91, 116, 122];
+var keysIgnore = [0, 16, 17, 18, 91, 116, 122, 123];
 /*
  * left,up,right,down,A,B,X,Y   you can add more should your game require it.
 */
@@ -35,6 +36,10 @@ var gamepadReMap = [2,3,0,1];
 var keyVars = [];
 //For touch-enabled devices
 var touchVars = [];
+//from webtop project - 
+var imgSocs = 'style="background:center/contain no-repeat url(\'images/';
+//base64 code for an empty 1x1 png:
+var imgDummy = ' src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAIAAAACAQMAAABIeJ9nAAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAAApJREFUCNdjAAIAAAQAASDSLW8AAAAASUVORK5CYII="';
 // Create the audio part of the game:
 //the main audio file will be put in here:
 var audioSprite;

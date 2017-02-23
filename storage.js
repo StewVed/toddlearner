@@ -18,7 +18,7 @@ function storageCheck() {
       saveY = 0;
     }
   } else {
-    upNotOpen('localStorage appears to be unavailable in this browser. Unable to save anything.');
+    upNotOpen('localStorage appears to be unavailable in this browser. Unable to save anything.','');
     saveY = -1;
   }
 }
@@ -54,7 +54,7 @@ function storageSave(toSave, dataToSave) {
     if (!document.getElementById('storY')) {
       //temporerily store the data in this variable.
       saveY = [toSave, dataToSave];
-      upNotOpen('Remember preferences?<button id="storY" class="uButtons uButtonGreen" type="button " style="font-size:1.5em;width:30%;margin:.1em .2em;float:left;">Yes</button>' + '<button id="storN" class="uButtons uButtonRed" type="button" style="font-size:1.5em;width:30%;margin:.1em .2em;float:right;">No</button>');
+      upNotOpen('Remember preferences?<button id="storY" class="uButtons uButtonGreen" type="button " style="font-size:1.5em;width:30%;margin:.1em .2em;float:left;">Yes</button>' + '<button id="storN" class="uButtons uButtonRed" type="button" style="font-size:1.5em;width:30%;margin:.1em .2em;float:right;">No</button>','');
     }
   }
   //else stor is -1 and that means the user has opted to not save anything. 

@@ -1,10 +1,3 @@
-create universal settings hamburger and sidebar thingy.
-(modular as usual in it's own js file.)
-
-
-give the popup toaster a containing div that is the height of the
-message - animate the bounce to something like -10%
-
 
 Animate the words in time with the audio spoken words.
   could make the word bigger, bounce up a bit, change color, etc.

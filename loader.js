@@ -22,7 +22,7 @@ var fileList = ['initialize', 'inputs', 'main', 'settings', 'sounds', 'storage',
 
 
 //check the toaster for scrolling etc.:
-//sw_active_activated('u');
+// sw_active_activated('u');
 
 if ('serviceWorker' in navigator) {
   //https://w3c.github.io/ServiceWorker/#install
@@ -108,16 +108,13 @@ function upNotCheck(msg) {
     if (gameVars.tWoz) {
       //the main game has initialized, so show the message.
       if (msg.length < 3) {
-        var heh = '';
         if (msg === 'i') {
-          heh = 'You can use this webapp while offline!'
+          upNotOpen('You can use this webapp while offline!','');
         }
         else if (msg === 'u') {
-          heh = 'app Updated.<br>scroll up to see what\'s new.<br><br>' + appCL;
+          upNotOpen('app Updated!<br>scroll up to see what&apos;s new.', appCL);
         }
-        msg = heh;
       }
-      upNotOpen(msg)
     }
   }
   else {
@@ -127,22 +124,32 @@ function upNotCheck(msg) {
     }, 200);
   }
 }
-function upNotOpen(msg) {
-  var newWindow;
-  if (document.getElementById('toastPopup')) {
-    //change toastPopup from installed to updated.
-    newWindow = document.getElementById('unp');
+function upNotOpen(msg, extras) {
+  if (document.getElementById('toastContainer')) {
+    //for the moment, only allow one popup.
+    document.body.removeChild(document.getElementById('toastContainer'));
   }
-  else {
-    newWindow = document.createElement('div');
-    newWindow.id = 'toastPopup';
-    document.body.appendChild(newWindow);
-  }
-  newWindow.innerHTML = '<div id="toastClose" class="buttonClose">X</div>' +
-  '<div id="unp">' + msg + '</div>';
-  
+
+  var newWindow = document.createElement('div');
+  newWindow.id = 'toastContainer';
+  document.body.appendChild(newWindow);
+
+  newWindow.innerHTML =
+  '<div id="toastPopup">' +
+  '<div id="toastClose" class="buttonClose">X</div>' +
+  '<div id="unp">' + msg + '</div>' + extras + '</div>';
+
   newWindow.classList.add('letScroll');
   upSetClass(newWindow);
+  closeButtonRight('toastClose');
+  newWindow.style.top = (document.body.offsetHeight - (document.getElementById('unp').offsetHeight + document.getElementById('unp').offsetTop + 6)) + 'px';
+  newWindow.style.height = (document.getElementById('unp').offsetHeight + document.getElementById('unp').offsetTop + 6) + 'px';
+}
+function closeButtonRight(zName) {
+    //set close button to the right.
+  document.getElementById(zName).style.left = 
+    (document.getElementById(zName).parentNode.clientWidth
+     - document.getElementById(zName).offsetWidth) + 'px';
 }
 function upSetClass(zElem) {
   var zElemChildList = zElem.children;
@@ -164,9 +171,9 @@ function upNotClose() {
     document.getElementById('toastPopup').style.transition = '.3s ease-in';
     document.getElementById('toastPopup').style.top = '100%';
     window.setTimeout(function() {
-      if (document.getElementById('toastPopup')) {
+      if (document.getElementById('toastContainer')) {
         //after a second, once the element is hidden, remove it.
-        document.body.removeChild(document.getElementById('toastPopup'));
+        document.body.removeChild(document.getElementById('toastContainer'));
       }
     }, 500);
   }
