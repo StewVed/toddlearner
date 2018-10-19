@@ -5,6 +5,13 @@ var zAll = '<span class="B'
   , zDev = zAll + ' Or">Development: </span>'
 
 var appCL =
+  '<p class="B C">11th October 2018</p> ' +
+  '<ul><li>' + zNew + 'Play button after the game hasloaded, with Sound mute option. Mute option added to Settings as well.' +
+  '</li><li>' + zImp + 'Spoken words now stop if you interact before all of the words are spoken. This also means that you can mute the sounds and read the words.' +
+  '</li><li>' + zImp + 'Settings should look better and be a bit quicker.' +
+  '</li><li>' + zImp + 'Lots of little improvements and tweaks.' +
+  '</li></ul>' +
+  '<hr>' +
   '<p class="B C">23rd February 2017</p> ' +
   '<ul><li>' + zImp + 'More colors shown on the volume control.' +
   '</li><li>' + zImp + 'More accurate <q>toast</q> popup animation.' +

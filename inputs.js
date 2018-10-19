@@ -195,6 +195,10 @@ function mouseMove(e) {
     gameVars.gameObjectLast = gameVars.gameObject;
     gameVars.gameObject = findObject(e);
   }
+  else {
+    gameVars.gameObjectLast = gameVars.gameObject;
+    gameVars.gameObject = null;
+  }
   var zTime = new Date().getTime();
   //check for onmouseout/onmousein events!
   if (gameVars.gameObjectLast !== gameVars.gameObject) {
@@ -268,7 +272,7 @@ function mouseMoveOver(targ) {/*
 function mouseUp(e) {
   bubbleStop(e);
   //do any mouseup stuff here, eg. flinging or animated panning
-  if (mouseVars.type == 'click') {
+  if (mouseVars.type == 'click' || mouseVars.current.target.classList.contains('uButtons')) {
     if (mouseVars.button = 1) {
       mouseClick();
     } else if (mouseVars.button = 2) {
@@ -278,6 +282,7 @@ function mouseUp(e) {
   //extra bit for moving the volume, so it's new value can be saved.
   if (mouseVars.type == 'vol') {
     storageSave('vol', globVol.toFixed(2));
+    updateVolume();
     //no point in recording something like 15.00000033
   } else if (mouseVars.button == 1) {
     if (mouseVars.type == 'scrollable' || mouseVars.type === 'scrolling') {
@@ -348,9 +353,9 @@ function mouseClick() {
   if (targID === 'toastClose') {
     upNotClose();
   } else if (targID === 'sets') {
-    settingsCreate();
+    settingsOpen();
   } else if (targID === 'setsClose') {
-    settingsClose1();
+    settingsClose();
   } else if (targID === 'bAbout') {
     upNotOpen('About the Developer', appAbout);
   } else if (targID === 'bChange') {
@@ -362,12 +367,9 @@ function mouseClick() {
     upNotClose();
   } else if (targID === 'fsI' || targID === 'fs') {//fullscreen button
     fullScreenToggle();
-  } else {
-    if (!randing) {
-      randing = 1;
-      endUp();
-    }
-  }  //look for volume control slider
+  } else if (!xtraInputs(targID)) {
+    endUp();
+  }
 
 }
 function mouseLongClick() {//this is also the right-click.
@@ -442,7 +444,7 @@ function volDown() {
 function volMove() {
   //find the percentage of the the slider's left
   var zWidth = mouseVars.start.target.parentNode.offsetWidth;
-  var zLeft = mouseVars.start.target.parentNode.offsetLeft + document.getElementById('cont').offsetLeft;
+  var zLeft = mouseVars.start.target.parentNode.offsetLeft + document.getElementById('settns').offsetLeft;
   var sliderLeft = mouseVars.current.x - zLeft + 2;
   sliderLeft -= (mouseVars.start.target.offsetWidth / 2);
   var sliderPercent = (sliderLeft / (zWidth - mouseVars.start.target.offsetWidth)) * 100;
@@ -452,6 +454,7 @@ function volMove() {
     sliderPercent = 100;
   }
   globVol = (sliderPercent / 100);
+  updateVolume();
   //document.getElementById('vol%').innerHTML = Math.round(sliderPercent) + '%';
   //change the color of the slider ball to where the ball is
   var zNum = Math.round((240/100) * (100-sliderPercent));
@@ -483,7 +486,6 @@ function scroller(targ, toScrollBy) {
   var tcTop = document.getElementById('toastContainer').offsetTop;
   var longest = document.body.offsetHeight - (targ.clientHeight + tcTop);//don't include border on targ.
 
-  //debugger;
   if (longest > zTop) {
     zTop = longest;
   }

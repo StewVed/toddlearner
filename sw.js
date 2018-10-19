@@ -1,46 +1,27 @@
-var zAppCache = 'toddlearner-2017-2-23';
-self.addEventListener('install', function(event) {
-  event.waitUntil(caches.open(zAppCache).then(function(cache) {
-    return cache.addAll([
-        './'
-      , './appmanifest'
-      , './images/Patreon.png'
-      , './images/PaypalDonate.png'
-      , './images/StewVed.jpg'
-      , './initialize.js'
-      , './inputs.js'
-      , './loader.js'
-      , './main.css'
-      , './main.js'
-      , './settings.js'
-      , './sounds.js'
-      , './storage.js'
-      , './texts.js'
-      , './toddlearnerAudio.ogg'
+var zAppCache = 'toddlearner-2018-10-16';
 
-    /*
-      Do not include:
-      index.html
-      (chrome 56.0.2924.87 (64-bit) asks for appmanifest now!) Application Manifest file (appmanifest)
-      any favicons
-      Service Worker file (sw.js)
-    */
-    ])
-  }))
-});
+/*
+  trying fetch version from
+  https://jakearchibald.com/2014/offline-cookbook/#on-network-response
+  very similar, though this version opens the cache first which makes
+  more sense to me. Also because anthing not found in the cache should be
+  cached, I shouldn't need the install event at all. This should be good
+  for if/when things change, so I don't have to change the file list.
+*/
 self.addEventListener('fetch', function(event) {
   event.respondWith(
-    caches.match(event.request).then(function(cacheResponse) {
-      return cacheResponse || fetch(event.request).then(function(netResponse) {
-        return caches.open(zAppCache).then(function(cache) {
-          cache.put(event.request, netResponse.clone());
-          console.log('flle not found in cache!');
-          return netResponse;
+    caches.open(zAppCache).then(function(cache) {
+      return cache.match(event.request).then(function (response) {
+        return response || fetch(event.request).then(function(response) {
+          cache.put(event.request, response.clone());
+          return response;
         });
       });
     })
   );
 });
+
+
 self.addEventListener('activate', function(event) {
   event.waitUntil(caches.keys().then(function(cacheNames) {
     return Promise.all(cacheNames.map(function(cacheName) {

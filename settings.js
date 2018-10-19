@@ -22,18 +22,27 @@ function settingsCreate() {
     //close button
     '<div id="setsClose" class="buttonClose">X</div>' +
     //fullscreen toggle button
-    '<div id="fs" class="uButtons uButtonGreen">' + 
-      '<span id="fsI" class="fsInner">&#9974;</span> Fullscreen' + 
+    '<div id="fs" class="uButtons uButtonGreen">' +
+      '<span id="fsI" class="fsInner">&#9974;</span> Fullscreen' +
     '</div>' +
     '<br>' +
     //volume control
-    '<div id="vol-Cv" class="volCont">&nbsp;' + 
-      '<div id="vol-Iv" class="volInner"><div id="vol-T" class="vImg">&#9698;</div></div>' + //Off ♫ &#128266;
+    /*
+      add mute/unmute toggler to the volume control
+      &#128266; &#x1F50A; - speaker with sound waves
+      &#128263; &#x1F507; - speaker with diagonal line through (muted)
+    */
+    '<div id="muteToggle" class="uButtons uButtonGreen" style="font-size:1em;">&#128266;</div>' +
+
+    '<div id="vol-Cv" class="volCont">&nbsp;' +
+    '<div id="vol-Iv" class="volInner">' +
+        '<div id="vol-T" class="vImg">&#9698;</div>' +
+      '</div>' + //Off ♫ &#128266;
     '</div>' +
     '<div id="bAbout" class="uButtons uButtonGrey">About</div>' +
     '<div id="bChange" class="uButtons uButtonGrey">ChengeLog</div>' +
     '<br>' +
-    '<hr>' + //Now for the Support buttons:
+    '<hr id="hrSizer">' + //Now for the Support buttons:
     '<p class="B pZW">Tips & Support:</p>' + //Patreon Button-link to my site
     '<a class=\'ubLink\' href=\'https://www.patreon.com/stewved\' target=\'_blank\'><img class="imgSocs ubLink" ' + imgSocs + 'Patreon.png\');cursor:pointer;margin:auto;display:block;width:100%;height:44px;"' + imgDummy + '></a>' + '<hr style=width:80%;">' + //PayPal Donate Button
     '<form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">' + '<input type="hidden" name="cmd" value="_s-xclick">' + '<input type="hidden" name="hosted_button_id" value="RJMCJX2TE8E4Y">' + //'<input type="image" style="height:47px;margin:4px auto;display:block;" src="https://www.paypalobjects.com/en_US/GB/i/btn/btn_donateCC_LG.gif" border="0" name="submit" alt="PayPal – The safer, easier way to pay online.">' +
@@ -41,25 +50,28 @@ function settingsCreate() {
     '</form>'
     ;
   document.body.appendChild(newElem);
+  //check whether muted or not.
+  swapToggler('muteToggle');
+  //set volume slider
+  volUpdate();
+  //add X to the settings pane
   closeButtonRight('setsClose');
   //in the CSS, the left is set to -90% and width 90%
   //so now we move it onto the screen from the left.
-  window.setTimeout(function(){
-    document.getElementById('settns').style.left = 0;
-    volUpdate();
-  },25);
+
 }
 
-function settingsClose1() {
+function settingsOpen() {
+  //move the settings pane into view
+  document.getElementById('settns').style.left = 0;
+  //hide the hamburger menu icon.
+  document.getElementById('sets').style.opacity = 0;
+}
+
+function settingsClose() {
   if (document.getElementById('settns')) {
     //move the settings element back offscreen to the left
-    document.getElementById('settns').style.left = '-90%';
-    //after it has moved offscreen, remove the whole thing.
-    window.setTimeout(function(){settingsClose2()},600);
-  }
-}
-function settingsClose2() {
-  if (document.getElementById('settns')) {
-    document.body.removeChild(document.getElementById('settns'));
+    document.getElementById('settns').style.left = '-100%';
+    window.setTimeout(function(){document.getElementById('sets').style.opacity = 1;},600);
   }
 }

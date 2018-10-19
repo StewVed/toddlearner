@@ -22,7 +22,11 @@ function resize() {
     portraitLayout = 1;
   }
 
-  //document.body.style.fontSize = a * .5 + '%';
+  if (document.getElementById('pB')) {
+    document.getElementById('playButtons').style.top = ((window.innerHeight - document.getElementById('playButtons').offsetHeight) / 2) + 'px';
+    document.getElementById('playB').style.left = ((window.innerWidth - document.getElementById('playB').offsetWidth) / 2) + 'px';
+    document.getElementById('pmuteToggle').style.left = ((window.innerWidth - document.getElementById('pmuteToggle').offsetWidth) / 2) + 'px';
+  }
 
   var gWidth = document.body.offsetWidth;
   var gHeight = (gWidth / (16 / 9));
@@ -30,6 +34,14 @@ function resize() {
     gHeight = document.body.offsetHeight;
     gWidth = gHeight * (16 / 9);
   }
+
+
+  document.getElementById('vol-Cv').style.width =
+    (document.getElementById('hrSizer').clientWidth -
+    (document.getElementById('muteToggle').offsetWidth + 10)) + 'px';
+
+  volUpdate();
+
   document.getElementById('cont').style.width = gWidth + 'px';
   document.getElementById('cont').style.height = gHeight + 'px';
 
@@ -225,7 +237,7 @@ function resetWordList() {
 }
 
 function userAsk() {
-  gameVars.gameForeText = 'Which is the ' + 
+  gameVars.gameForeText = 'Which is the ' +
   zColors[zObjects[gameVars.picked].color].text +
   ' ' +
   zShapes[zObjects[gameVars.picked].type].text +
@@ -258,10 +270,9 @@ function userAsk() {
 
   gameRenderFore();
 
-  randing = 0;
+  //randing = 0;
 }
 function userRight() {
-  soundPlay(zWords[5].aBuffer);
   gameVars.gameForeText = 'Yes! That is the ' +
   zColors[zObjects[gameVars.picked].color].text +
   ' ' +
@@ -281,7 +292,6 @@ function userRight() {
   gameRenderFore();
 }
 function userWrong(num) {
-  soundPlay(zWords[3].aBuffer);
   gameVars.gameForeText = 'That is a ' +
   zColors[zObjects[num].color].text +
   ' ' +
@@ -304,7 +314,7 @@ function newGame() {
   playing = null ;
   Win = 1;
   turn = 0;
-  randing = 1;
+  //randing = 1;
   createObjects();
   //this can be used for reseting as well as the initial setup.
   window.clearInterval(gameVars.tFrame);
@@ -314,19 +324,54 @@ function newGame() {
 }
 function endUp() {
   var ting = parseInt(gameVars.gameObject);
+
   if (isFinite(ting)) {
-    if (ting === gameVars.picked) {
-      userRight();
+    //if there is a word being played, stop it playing
+    if (speakWord) {
+      speakWord.disconnect();
+      //speakWord.stop(); cannot use because it fires the ended event.
     }
-    else {
-      userWrong(parseInt(ting));
+    var a = wordList[1];
+    //first, make sure that there is somethere there
+    if (a) {
+      if (a === 'ask') {
+        resetWordList();
+        if (ting === gameVars.picked) {
+          userRight();
+        }
+        else {
+          userWrong(parseInt(ting));
+        }
+      }
+      else {
+        endYN(a);
+      }
     }
+    else { //if nothing is there, somert has gone wrong. Just do another question
+      createObjects();
+    }
+
   }
   else {
-    gameVars.gameObject = null;
-    randing = 0;
+    gameVars.gameObject = null
+    if (wordList[1] !== 'ask') {
+      speakWord.disconnect();
+      endYN(wordList[1]);
+    }
   }
 }
+function endYN(a) {
+  resetWordList();
+
+  if (a === 'right') {
+    createObjects();
+  }
+  if (a === 'wrong') {
+    userAsk();
+  }
+}
+
+
 function endTurn() {
   combo = 0;
   turns++;

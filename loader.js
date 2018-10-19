@@ -22,77 +22,82 @@ var fileList = ['initialize', 'inputs', 'main', 'settings', 'sounds', 'storage',
 
 
 //check the toaster for scrolling etc.:
-// sw_active_activated('u');
+//sw_active_activated('u');
 
-if ('serviceWorker' in navigator) {
-  //https://w3c.github.io/ServiceWorker/#install
-  navigator.serviceWorker.register('sw.js').then(function(registration) {
-    //if there is an active serviceWorker, listen for changes in it's state
-    if (registration.active) {
-      registration.active.addEventListener('statechange', function(e) {
-        console.log('active serviceWorker statechange: ' + e.target.state);
-        if (e.target.state === 'activated') {
-          sw_active_activated('u');
-        }
-      });
-    }
+//for ease of debugging, comment out this so the serviceWorker doesn't cache files!
+//initServiceWorker();
 
-    /*
-      if there is a waiting serviceWorker, listen for changes in it's state.
-      When the page closes, 
-      Upon page reload, the waiting serviceWorker is
-      promoted to the active serviceWorker.
-    */
-    if (registration.waiting) {
-      if (registration.active && registration.waiting.state === 'installed') {
-        console.log('waiting ServiceWorker installed and still waiting to activate.');
-        //inform user that a hard-reload is needed, not just F5
-        upNotCheck('Waiting to update...<br>Please close then re-open app for new version.');
-      }
-      registration.waiting.addEventListener('statechange', function(e) {
-        console.log('waiting serviceWorker statechange: ' + e.target.state);
-        if (e.target.state === 'activated') {
-          sw_active_activated('u');
-        }
-      });
-    }
-    /*
-      listen for an update to the serviceworker's file.
-      This should fire on the first load of the web page, since
-      any serviceWorker file is different to nothing.
-      Also should fire if there is any difference in cached 
-      and server's serviceWorker file.
-
-      Dispatched when the service worker registration's
-      installing worker changes
-    */
-    registration.addEventListener('updatefound', function() {
-      console.log('registration serviceWorker update Found');
-      //Listen for changes in the installing serviceWorker's state
-      //registration.installing.addEventListener('statechange', swRI);
-      registration.installing.addEventListener('statechange', function(e){
-        //Assume a serviceWorker keeps it's eventListeners
-        //when it goes from the installing, to waiting, then to active one.
-        //if not, addEventListener for waiting and active when required.
-        //yeah... seems to keep the eventlistener through it all.
-        console.log('registration serviceWorker statechange: ' + e.target.state);
-        if (e.target.state === 'installed') {
-          if (registration.active) {
-            console.log('new ServiceWorker installed and waiting to activate.');
-            sw_installed()
+function initServiceWorker() {
+  if ('serviceWorker' in navigator) {
+    //https://w3c.github.io/ServiceWorker/#install
+    navigator.serviceWorker.register('sw.js').then(function(registration) {
+      //if there is an active serviceWorker, listen for changes in it's state
+      if (registration.active) {
+        registration.active.addEventListener('statechange', function(e) {
+          console.log('active serviceWorker statechange: ' + e.target.state);
+          if (e.target.state === 'activated') {
+            sw_active_activated('u');
           }
-        }
-        else if (e.target.state === 'activated') {
-          console.log('new ServiceWorker activated from install');
-          sw_active_activated('i')
-        }
-      })
-    });
+        });
+      }
 
-    console.log('ServiceWorker registered')
-  }).catch(function(err) {
-    console.log('ServiceWorker registration failed: ', err)
-  });
+      /*
+        if there is a waiting serviceWorker, listen for changes in it's state.
+        When the page closes, 
+        Upon page reload, the waiting serviceWorker is
+        promoted to the active serviceWorker.
+      */
+      if (registration.waiting) {
+        if (registration.active && registration.waiting.state === 'installed') {
+          console.log('waiting ServiceWorker installed and still waiting to activate.');
+          //inform user that a hard-reload is needed, not just F5
+          upNotCheck('Waiting to update...<br>Please close then re-open app for new version.');
+        }
+        registration.waiting.addEventListener('statechange', function(e) {
+          console.log('waiting serviceWorker statechange: ' + e.target.state);
+          if (e.target.state === 'activated') {
+            sw_active_activated('u');
+          }
+        });
+      }
+      /*
+        listen for an update to the serviceworker's file.
+        This should fire on the first load of the web page, since
+        any serviceWorker file is different to nothing.
+        Also should fire if there is any difference in cached 
+        and server's serviceWorker file.
+
+        Dispatched when the service worker registration's
+        installing worker changes
+      */
+      registration.addEventListener('updatefound', function() {
+        console.log('registration serviceWorker update Found');
+        //Listen for changes in the installing serviceWorker's state
+        //registration.installing.addEventListener('statechange', swRI);
+        registration.installing.addEventListener('statechange', function(e){
+          //Assume a serviceWorker keeps it's eventListeners
+          //when it goes from the installing, to waiting, then to active one.
+          //if not, addEventListener for waiting and active when required.
+          //yeah... seems to keep the eventlistener through it all.
+          console.log('registration serviceWorker statechange: ' + e.target.state);
+          if (e.target.state === 'installed') {
+            if (registration.active) {
+              console.log('new ServiceWorker installed and waiting to activate.');
+              sw_installed()
+            }
+          }
+          else if (e.target.state === 'activated') {
+            console.log('new ServiceWorker activated from install');
+            sw_active_activated('i')
+          }
+        })
+      });
+
+      console.log('ServiceWorker registered')
+    }).catch(function(err) {
+      console.log('ServiceWorker registration failed: ', err)
+    });
+  }
 }
 function sw_installed() {
   //New serviceWorker's cache has downloaded, and it is waiting to activate

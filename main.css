@@ -1,5 +1,5 @@
 body {
-  background-color: whitesmoke;
+  background-color: white;
   box-sizing: border-box;
   overflow: hidden;
   margin: 0;
@@ -29,13 +29,13 @@ ul {
 }
 #cont {
   position: absolute;
-  background-color: whitesmoke;
+  background-color: white;
 }
 
 .uButtons {
-  text-align: center;
-  margin: 0 .2em;
-  padding: 1px 12px;
+  /* text-align: center; */
+  margin: 0 0.2em;
+  padding: 0.3em 0.4em;
   color: black;
   font-size: .75em;
   border: .1em solid black;
@@ -121,29 +121,31 @@ ul {
   border-bottom: 2px solid hsl(210, 100%, 50%);
   border-right: 2px solid hsl(210, 100%, 50%);
   font-size: 125%;
+  transition: .5s;
 }
 
 .settW {
   position: absolute;
   top: 0;
-  left: -90%;
+  left: -100%;
   height: 100%;
-  width: 90%;
+  width: 100%;
   background-color: hsla(0, 0%, 100%, .95);
   border-right: 4px solid hsl(210, 100%, 50%);
   transition: left .5s;
   text-align: center;
   padding: 1.5em .8em;
   box-sizing: border-box;
+  z-index: 10;
 }
 
 .volCont {
   background: linear-gradient(90deg, hsl(240,100%,50%), hsl(180,100%,50%), hsl(120,100%,50%), hsl(60,100%,50%), hsl(0,100%,50%));
   border: .1em solid black;
   border-radius: 5em;
-  clear: both;
   position: relative;
-  margin: 0.6em .2em;
+  margin: 1em 0em;
+  display: inline-block;
 }
 
 .volInner {
@@ -233,6 +235,7 @@ ul {
   animation: popupBouncer .5s ease-in-out;
   background-color: hsla(0, 0%, 100%, .95);
   background: hsl(0, 0%, 100%);
+  z-index:101;
 }
 @keyframes popupBouncer {
   0% {top: 100%;}
@@ -241,10 +244,10 @@ ul {
 }
 
 .buttonClose {
+  position: absolute;
   font-weight: bold;
   padding: .05em 0.3em;
   font-size: 1.5em;
-  position: absolute;
   top: 0px;
 }
 #unp {
@@ -257,4 +260,11 @@ ul {
   padding-bottom: 1.2em;
   border-bottom: .2em solid black;
   box-sizing: border-box;
+}
+.playOverlay {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: white;
+  opacity: 1;
 }

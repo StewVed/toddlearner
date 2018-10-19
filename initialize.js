@@ -46,16 +46,19 @@ var audioSprite;
 //I hate vendor prefixes! Why not just keep to the W3 specs?!?!?!
 window.AudioContext = window.AudioContext || window.webkitAudioContext;
 var audioCtx = new window.AudioContext();
+var audioVolume = audioCtx.createGain();
 /*
-  the plan is to create loads of little audioBuffers from the sprite,
-  connecting them all to the AudioContext, then since they are all in
-  memory, they should be VERY fast for playback of eack sound.
+  For this project, there will only be one sound - the voice speaking the words.
+  If the user clicks a button before the end of the speech, I have to be able
+  to stop it mid-speach to respond to the user's input
 */
+var speakWord;
 
 var nums = []
 , zSize
 , z03
 , globVol = .33 //the volume of the beeps in the game.
+, isMuted = false //as the user muted the game?
 , randing = 0   //whether the game is generating and playing the new number sequence
 , buttons = 4   //how many buttons to use in the game - 4 by default
 , level = 1     //starting/current level
@@ -66,13 +69,13 @@ var nums = []
 , wordList
 
 , zWords = [
-    {text:'Which', aStart:0.246, aDuration:.584}
-  , {text:'That', aStart:1.083, aDuration:.564}
-  , {text:'is', aStart:1.948, aDuration:.470}
-  , {text:'are', aStart:2.626, aDuration:.540}
-  , {text:'the', aStart:3.495, aDuration:.434}
-  , {text:'a', aStart:4.181, aDuration:.492}
-  , {text:'Yes!', aStart:5.090, aDuration:.722}
+    {text:'Which', aStart:0.246, aDuration:.580}
+  , {text:'That', aStart:1.083, aDuration:.560}
+  , {text:'is', aStart:1.948, aDuration:.465}
+  , {text:'are', aStart:2.626, aDuration:.535}
+  , {text:'the', aStart:3.495, aDuration:.430}
+  , {text:'a', aStart:4.181, aDuration:.485}
+  , {text:'Yes!', aStart:5.090, aDuration:.715}
   , {text:'s', aStart:5.445, aDuration:.369} //the s of yes :D
 ]
 , zNumbers = [
@@ -90,20 +93,20 @@ var nums = []
 //I think I will just do darker and lighter as 25% and 90% or somerthing.
 //eg. hslClrs[0][0] is 'red', hslClrs[2][2] is 48
 , zColors = [
-   {text:'red', h:0, l:50, aStart:14.587, aDuration:.609}
- , {text:'orange', h:31, l:50, aStart:15.441, aDuration:.628}
- , {text:'yellow', h:60, l:48, aStart:16.316, aDuration:.378}
- , {text:'green', h:120, l:45, aStart:16.941, aDuration:.505}
- , {text:'blue', h:220, l:50, aStart:17.696, aDuration:.456}
- , {text:'purple', h:270, l:50, aStart:18.398, aDuration:.633}
- , {text:'pink', h:320, l:50, aStart:19.279, aDuration:.552}
+   {text:'red', h:0, l:50, aStart:14.587, aDuration:.605}
+ , {text:'orange', h:31, l:50, aStart:15.441, aDuration:.625}
+ , {text:'yellow', h:60, l:48, aStart:16.316, aDuration:.375}
+ , {text:'green', h:120, l:45, aStart:16.936, aDuration:.500}
+ , {text:'blue', h:220, l:50, aStart:17.696, aDuration:.450}
+ , {text:'purple', h:270, l:50, aStart:18.398, aDuration:.630}
+ , {text:'pink', h:320, l:50, aStart:19.279, aDuration:.550}
  ]
 , zShapes = [
-    {text:'circle', path:null, aStart:20.079, aDuration:.871}
-  , {text:'triangle', path:null, aStart:21.199, aDuration:.761}
-  , {text:'square', path:null, aStart:22.209, aDuration:.782}
-  , {text:'star', path:null, aStart:23.239, aDuration:.836}
-  , {text:'heart', path:null, aStart:24.318, aDuration:.772}
+    {text:'circle', path:null, aStart:20.079, aDuration:.865}
+  , {text:'triangle', path:null, aStart:21.199, aDuration:.755}
+  , {text:'square', path:null, aStart:22.209, aDuration:.775}
+  , {text:'star', path:null, aStart:23.239, aDuration:.830}
+  , {text:'heart', path:null, aStart:24.318, aDuration:.765}
 ]
 , gameWindow    //vars to hold variables for the window
 //gameVars woz ere! Now in loader file so app knows when it can display a popup toast.
@@ -113,6 +116,8 @@ var nums = []
 function Init() {
   //Add event listeners to the game element
   addEventListeners();
+  //check for saved data. If set, the user has chosed to either save or not save data.
+  storageCheck();
   //initialize the mouse event
   mouseClear();
   //initialize the scroll vars
@@ -143,8 +148,6 @@ function Init() {
     '<canvas id="gameFore" style="position:absolute;margin:0;left:0;"></canvas>' +
   '</div>';
 
-  //check for saved data. If set, the user has chosed to either save or not save data.
-  storageCheck();
 
   //for the moment, just use the default keyset:
   keysCurrent = keysDefault;
@@ -153,9 +156,13 @@ function Init() {
   var dataToLoad = storageLoad('vol');
   if (dataToLoad) {
     globVol = parseFloat(dataToLoad);
+    updateVolume();
+  }
+  var dataToLoad = storageLoad('muted');
+  if (dataToLoad) {
+    isMuted = parseInt(dataToLoad);
   }
 
-  settingsButton();
   //make a link to the game areas in memory for quicker access:
   gameVars.gameBack = document.getElementById('gameBack');
   gameVars.gameMain = document.getElementById('gameMain');
@@ -166,11 +173,16 @@ function Init() {
   gameVars.gameMainCTX = gameVars.gameMain.getContext('2d');
   gameVars.gameForeCTX = gameVars.gameFore.getContext('2d');
 
+  //create the settings window here so that it is
+  //all loaded when needed.
+  settingsCreate();
+
+  settingsButton();
   //now that everything is set up, make a recurring checker for button presses:
   gamePadsButtonEventCheck();
   resize();
   resetWordList();
-  newGame();
+  playButton();
 }
 function addEventListeners() {
   window.addEventListener('resize', resize, false);
@@ -192,4 +204,80 @@ function addEventListeners() {
   window.addEventListener('mouseup', mouseUp, false);
   window.addEventListener('keydown', keyDown, false);
   window.addEventListener('keyup', keyUp, false);
+}
+function playButton() {
+  /*
+    get the user to click/tap the display
+    before thegame beings, also giving the user
+    a chance to mute the game before it plays.
+    clicking the play button calls newGame();
+  */
+  //create a semi-opaque rounded rectangle on the top-right, and put the message into it.
+  var newElem = document.createElement('div');
+  newElem.id = 'pB';
+  newElem.classList = 'playOverlay';
+
+  newElem.innerHTML =
+    '<div id="playButtons" style="position:absolute;width:100%;" >' +
+      //Play button
+      '<div id="playB" class="uButtons uButtonGreen" style="position:relative;margin:0;font-size:3em;box-sizing:border-box;">&nbsp;Play&nbsp;</div>' +
+      '<br><br>' +
+      /*
+        mute/unmute toggler
+        &#128266; &#x1F50A; - speaker with sound waves
+        &#128263; &#x1F507; - speaker with diagonal line through (muted)
+      */
+      '<div id="pmuteToggle" class="uButtons uButtonGreen" style="position:relative;margin:0;font-size:2em;box-sizing:border-box;">&#128266;</div>' +
+    '</div>'
+    ;
+  document.body.appendChild(newElem);
+  if (isMuted) {
+    //switch grey to green
+    swapToggler('pmuteToggle');
+  }
+  resize();
+}
+function xtraInputs(zId) {
+  if (zId === 'playB') {
+     document.body.removeChild(document.getElementById('pB'));
+     //thanks Google... (https://developers.google.com/web/updates/2017/09/autoplay-policy-changes#webaudio)
+     audioCtx.resume().then(() => {
+       console.log('Playback resumed successfully');
+     });
+     newGame();
+  }
+  else if (zId === 'muteToggle') {
+    isMuted = isMuted == 1 ? 0 : 1;
+    swapToggler('muteToggle');
+    storageSave('muted', isMuted);
+  }
+  else if (zId === 'pmuteToggle') {
+    isMuted = isMuted == 1 ? 0 : 1;
+    swapToggler('pmuteToggle');
+    swapToggler('muteToggle');
+    storageSave('muted', isMuted);
+  }
+  else {
+    return false;
+  }
+//if one of these buttons was the target id of the
+//elemnt, return true - no need to do endUp
+  return true;
+}
+function swapToggler(a) {
+  a = document.getElementById(a);
+  if (!isMuted) {
+    a.classList.remove('uButtonGrey');
+    a.classList.add('uButtonGreen');
+    a.innerHTML = '&#128266;';
+  }
+  else {
+    if (speakWord) {
+      speakWord.disconnect();
+      //speakWord.stop(); cannot use because it fires the ended event.
+    }
+    a.classList.remove('uButtonGreen');
+    a.classList.add('uButtonGrey');
+    a.innerHTML = '&#128263;';
+  }
 }
