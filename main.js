@@ -327,10 +327,7 @@ function endUp() {
 
   if (isFinite(ting)) {
     //if there is a word being played, stop it playing
-    if (speakWord) {
-      speakWord.disconnect();
-      //speakWord.stop(); cannot use because it fires the ended event.
-    }
+    speakWordStop();
     var a = wordList[1];
     //first, make sure that there is somethere there
     if (a) {
@@ -355,7 +352,7 @@ function endUp() {
   else {
     gameVars.gameObject = null
     if (wordList[1] !== 'ask') {
-      speakWord.disconnect();
+      speakWordStop();
       endYN(wordList[1]);
     }
   }

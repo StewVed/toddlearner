@@ -54,6 +54,12 @@ function soundEnded(zElem) {
     }
   }
 }
+function speakWordStop() {
+  if (speakWord) {
+    speakWord.disconnect();
+    //speakWord.stop(); cannot use because it fires the ended event.
+  }
+}
 function updateVolume() {
   audioVolume.gain.value = globVol;
 }

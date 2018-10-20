@@ -272,10 +272,7 @@ function swapToggler(a) {
     a.innerHTML = '&#128266;';
   }
   else {
-    if (speakWord) {
-      speakWord.disconnect();
-      //speakWord.stop(); cannot use because it fires the ended event.
-    }
+    speakWordStop();
     a.classList.remove('uButtonGreen');
     a.classList.add('uButtonGrey');
     a.innerHTML = '&#128263;';

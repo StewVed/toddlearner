@@ -25,7 +25,7 @@ var fileList = ['initialize', 'inputs', 'main', 'settings', 'sounds', 'storage',
 //sw_active_activated('u');
 
 //for ease of debugging, comment out this so the serviceWorker doesn't cache files!
-//initServiceWorker();
+initServiceWorker();
 
 function initServiceWorker() {
   if ('serviceWorker' in navigator) {
@@ -51,7 +51,7 @@ function initServiceWorker() {
         if (registration.active && registration.waiting.state === 'installed') {
           console.log('waiting ServiceWorker installed and still waiting to activate.');
           //inform user that a hard-reload is needed, not just F5
-          upNotCheck('Waiting to update...<br>Please close then re-open app for new version.');
+          upNotCheck('Waiting to update...<br>Please close then re-open app to update to the new version.', '');
         }
         registration.waiting.addEventListener('statechange', function(e) {
           console.log('waiting serviceWorker statechange: ' + e.target.state);
@@ -83,12 +83,12 @@ function initServiceWorker() {
           if (e.target.state === 'installed') {
             if (registration.active) {
               console.log('new ServiceWorker installed and waiting to activate.');
-              sw_installed()
+              sw_installed();
             }
           }
           else if (e.target.state === 'activated') {
             console.log('new ServiceWorker activated from install');
-            sw_active_activated('i')
+            sw_active_activated('i');
           }
         })
       });
@@ -102,30 +102,31 @@ function initServiceWorker() {
 function sw_installed() {
   //New serviceWorker's cache has downloaded, and it is waiting to activate
   console.log('Service Worker update downloaded!');
-  upNotCheck('Update downloaded.<br>Please restart app for new version.');
+  upNotCheck('Update downloaded.<br>Please restart app for new version.', 'You may need to close and then reopen this app; sometimes reloading is not enough.');
 }
 function sw_active_activated(zType) {
   console.log('Service Worker ' + zType + ' Active!');
-  upNotCheck(zType);
+  upNotCheck(zType, '');
 }
-function upNotCheck(msg) {
-  if (gameVars) {
-    if (gameVars.tWoz) {
-      //the main game has initialized, so show the message.
-      if (msg.length < 3) {
-        if (msg === 'i') {
-          upNotOpen('You can use this webapp while offline!','');
-        }
-        else if (msg === 'u') {
-          upNotOpen('app Updated!<br>scroll up to see what&apos;s new.', appCL);
-        }
+function upNotCheck(msg, extras) {
+  if (gameVars && document.getElementById('cont')) {
+    //the main game has initialized, so show the message.
+    if (msg.length < 3) {
+      if (msg === 'i') {
+        upNotOpen('You can use this webapp while offline!', 'Neccessary files are cached on your device. If you clear the cache for this webapp, you will have to be online to re-download it.');
       }
+      else if (msg === 'u') {
+        upNotOpen('app updated!<br>scroll up to see what&apos;s new.', appCL);
+      }
+    }
+    else {
+      upNotOpen(msg, extras);
     }
   }
   else {
     //not yet initialized, so wait a bit then check again.
     window.setTimeout(function() {
-      upNotCheck(msg)
+      upNotCheck(msg, extras)
     }, 200);
   }
 }
@@ -137,7 +138,6 @@ function upNotOpen(msg, extras) {
 
   var newWindow = document.createElement('div');
   newWindow.id = 'toastContainer';
-  document.body.appendChild(newWindow);
 
   newWindow.innerHTML =
   '<div id="toastPopup">' +
@@ -145,6 +145,8 @@ function upNotOpen(msg, extras) {
   '<div id="unp">' + msg + '</div>' + extras + '</div>';
 
   newWindow.classList.add('letScroll');
+
+  document.body.appendChild(newWindow);
   upSetClass(newWindow);
   closeButtonRight('toastClose');
   newWindow.style.top = (document.body.offsetHeight - (document.getElementById('unp').offsetHeight + document.getElementById('unp').offsetTop + 6)) + 'px';
