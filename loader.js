@@ -144,8 +144,6 @@ function upNotOpen(msg, extras) {
   '<div id="toastClose" class="buttonClose">X</div>' +
   '<div id="unp">' + msg + '</div>' + extras + '</div>';
 
-  newWindow.classList.add('letScroll');
-
   document.body.appendChild(newWindow);
   upSetClass(newWindow);
   closeButtonRight('toastClose');
