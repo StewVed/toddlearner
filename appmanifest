@@ -2,6 +2,7 @@
   "name": "Toddler Learning game",
   "short_name": "Toddlearner",
   "description": "Learning game for toddlers by StewVed",
+  "start_url": ".",
   "orientation": "landscape",
   "display": "fullscreen",
   "lang": "en",
