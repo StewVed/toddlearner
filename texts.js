@@ -56,7 +56,7 @@ var appCL =
 
 
 var appBugs =
-  '<h1 style=text-align:center;margin-bottom:0;font-size:1.25em>StewVed\'s standard notice:</h1>' +
+  '<h1 style=text-align:center;margin-bottom:0;font-size:1.25em>StewVed&apos;s standard notice:</h1>' +
   '<p style=text-align:center;color:red;margin-top:0;line-height:1.5em;>' +
     'Warning: May contain Bugs!<br>' +
     'Cannot guarantee Bug free!<br>' +
@@ -68,7 +68,7 @@ var appAbout =
   'border-radius:0.7em;width:33%;margin-top:0.8em;margin-right:.1em;margin-bottom:.1em;>' +
   '<p>' +
     'Stewart Robinson (StewVed) was born in the United Kingdom, in the' +
-    ' late 1970\'s.' +
+    ' late 1970&apos;s.' +
   '</p>' +
   '<p>' +
     'He learned just about everything he knows about HTML/CSS/JavaScript' +
